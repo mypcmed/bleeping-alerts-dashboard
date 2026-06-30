@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>BleepingComputer Cybersecurity Alerts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #1f2937;
+      margin: 0;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #d1d5db;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background: white;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .summary-card h2 {
+      margin: 0;
+      font-size: 14px;
+      color: #6b7280;
+      text-transform: uppercase;
+    }
+
+    .summary-card .number {
+      margin-top: 8px;
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    input, select {
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .alert-card {
+      background: white;
+      border-left: 6px solid #6b7280;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .alert-card.high {
+      border-left-color: #dc2626;
+    }
+
+    .alert-card.medium {
+      border-left-color: #f59e0b;
+    }
+
+    .alert-card.low {
+      border-left-color: #2563eb;
+    }
+
+    .alert-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 0 0 8px;
+    }
+
+    .meta {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      font-size: 12px;
+      margin-right: 6px;
+    }
+
+    .badge.high {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge.medium {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge.low {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      color: #6b7280;
+      padding: 24px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>BleepingComputer Cybersecurity Alerts</h1>
+    <p>Static GitHub Pages dashboard powered by n8n.</p>
+  </header>
+
+  <main>
+    <section class="summary-grid">
+      <div class="summary-card">
+        <h2>Total Alerts</h2>
+        <div class="number" id="totalAlerts">0</div>
+      </div>
+
+      <div class="summary-card">
+        <h2>High Severity</h2>
+        <div class="number" id="highAlerts">0</div>
+      </div>
+
+      <div class="summary-card">
+        <h2>Medium Severity</h2>
+        <div class="number" id="mediumAlerts">0</div>
+      </div>
+
+      <div class="summary-card">
+        <h2>Last Updated</h2>
+        <div class="number" id="lastUpdated" style="font-size:18px;">-</div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <input id="searchBox" type="text" placeholder="Search alerts...">
+
+      <select id="severityFilter">
+        <option value="">All Severities</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+    </section>
+
+    <section id="alertsContainer"></section>
+  </main>
+
+  <footer>
+    Data source: BleepingComputer RSS processed by n8n.
+  </footer>
+
+  <script>
+    let allAlerts = [];
+
+    async function loadAlerts() {
+      try {
+        const response = await fetch('alerts.json?cacheBust=' + Date.now());
+        allAlerts = await response.json();
+
+        allAlerts.sort((a, b) => new Date(b.published) - new Date(a.published));
+
+        updateSummary(allAlerts);
+        renderAlerts(allAlerts);
+      } catch (error) {
+        document.getElementById('alertsContainer').innerHTML =
+          '<p>Unable to load alerts.json. Confirm the file exists in the GitHub repository.</p>';
+        console.error(error);
+      }
+    }
+
+    function updateSummary(alerts) {
+      document.getElementById('totalAlerts').textContent = alerts.length;
+
+      document.getElementById('highAlerts').textContent =
+        alerts.filter(a => a.severity === 'High').length;
+
+      document.getElementById('mediumAlerts').textContent =
+        alerts.filter(a => a.severity === 'Medium').length;
+
+      const latest = alerts.length ? new Date(alerts[0].published) : null;
+
+      document.getElementById('lastUpdated').textContent =
+        latest ? latest.toLocaleString() : '-';
+    }
+
+    function renderAlerts(alerts) {
+      const container = document.getElementById('alertsContainer');
+
+      if (!alerts.length) {
+        container.innerHTML = '<p>No alerts match the current filter.</p>';
+        return;
+      }
+
+      container.innerHTML = alerts.map(alert => {
+        const severityClass = String(alert.severity || '').toLowerCase();
+
+        return `
+          <article class="alert-card ${severityClass}">
+            <h2 class="alert-title">${escapeHtml(alert.title || 'Untitled Alert')}</h2>
+
+            <div class="meta">
+              <span class="badge ${severityClass}">${escapeHtml(alert.severity || 'Unrated')}</span>
+              <span class="badge">${escapeHtml(alert.category || 'General')}</span>
+              <span>${alert.published ? new Date(alert.published).toLocaleString() : 'No date'}</span>
+            </div>
+
+            <p>${escapeHtml(alert.summary || 'No summary provided.')}</p>
+
+            <a href="${escapeHtml(alert.link || '#')}" target="_blank" rel="noopener noreferrer">
+              Open source article
+            </a>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function applyFilters() {
+      const searchValue = document.getElementById('searchBox').value.toLowerCase();
+      const severityValue = document.getElementById('severityFilter').value;
+
+      const filtered = allAlerts.filter(alert => {
+        const searchableText = [
+          alert.title,
+          alert.summary,
+          alert.category,
+          alert.severity
+        ].join(' ').toLowerCase();
+
+        return searchableText.includes(searchValue) &&
+          (!severityValue || alert.severity === severityValue);
+      });
+
+      renderAlerts(filtered);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    document.getElementById('searchBox').addEventListener('input', applyFilters);
+    document.getElementById('severityFilter').addEventListener('change', applyFilters);
+
+    loadAlerts();
+  </script>
+</body>
+</html>
