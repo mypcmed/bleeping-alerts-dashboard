@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cybersecurity Alert Dashboard</title>
+  <title>BleepingComputer Security Alerts</title>
   <style>
     :root {
-      --bg: #071124;
-      --panel: #101a2e;
-      --panel-2: #202a3d;
+      --bg: #08111f;
+      --panel: #101b2d;
+      --panel-2: #0d1728;
       --border: rgba(148, 163, 184, 0.22);
-      --text: #f8fafc;
-      --muted: #a8b3c7;
-      --cyan: #38bdf8;
-      --critical: #ff4d5a;
-      --high: #ff7a1a;
-      --medium: #facc15;
+      --text: #e5edf7;
+      --muted: #91a4ba;
+      --accent: #22d3ee;
+      --critical: #ef4444;
+      --high: #f97316;
+      --medium: #eab308;
       --low: #22c55e;
-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
-      --radius: 18px;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+      --radius: 16px;
     }
 
     * { box-sizing: border-box; }
@@ -26,501 +26,553 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: radial-gradient(circle at top left, #0d1d3a 0, var(--bg) 38%, #050b18 100%);
+      background:
+        radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 34rem),
+        linear-gradient(180deg, #07101e 0%, #0b1220 100%);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
+    a { color: inherit; }
+
     .page {
-      width: min(1480px, calc(100% - 28px));
-      margin: 16px auto 28px;
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 22px 0 34px;
     }
 
     .hero {
       display: grid;
-      grid-template-columns: 1fr 190px 220px;
-      gap: 12px;
+      grid-template-columns: 1.5fr 0.8fr;
+      gap: 14px;
       align-items: stretch;
-      background: rgba(16, 26, 46, 0.88);
+      margin-bottom: 14px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(16, 27, 45, 0.96), rgba(13, 23, 40, 0.94));
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px 20px;
       box-shadow: var(--shadow);
+      padding: 18px;
     }
 
     .eyebrow {
-      color: var(--cyan);
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
+      color: var(--accent);
+      font-size: 0.75rem;
       font-weight: 800;
-      font-size: 11px;
-      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin: 0 0 8px;
     }
 
     h1 {
+      margin: 0 0 10px;
+      font-size: clamp(1.7rem, 3vw, 2.6rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .subhead {
+      color: var(--muted);
       margin: 0;
-      font-size: clamp(32px, 3.8vw, 48px);
-      line-height: 1.08;
-      letter-spacing: -0.05em;
-      max-width: 900px;
+      line-height: 1.5;
+      max-width: 74ch;
     }
 
-    .subtitle {
+    .status-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .time-status {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .mini-label {
       color: var(--muted);
-      margin: 8px 0 0;
-      font-size: 14px;
-    }
-
-    .hero-card, .metric-card, .content-card, .alert-card {
-      background: rgba(30, 41, 59, 0.72);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-
-    .hero-card {
-      padding: 14px 16px;
-      min-height: 92px;
-    }
-
-    .label {
-      color: var(--muted);
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      font-size: 11px;
-      margin-bottom: 8px;
+      font-weight: 700;
+      margin-bottom: 4px;
     }
 
-    .hero-value {
-      font-size: 22px;
-      font-weight: 850;
-      margin-bottom: 5px;
+    .mini-value {
+      font-size: 1.08rem;
+      font-weight: 800;
     }
 
-    .hero-subtext { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .meta {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
 
     .metrics {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin: 12px 0;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
     }
 
-    .metric-card {
-      position: relative;
-      overflow: hidden;
-      padding: 14px 16px;
-      min-height: 76px;
-    }
-
-    .metric-card::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      height: 3px;
-      background: var(--accent, var(--cyan));
-    }
-
-    .metric-value { font-size: 30px; font-weight: 900; margin-top: 4px; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 0.78fr 1.22fr;
-      gap: 12px;
-    }
-
-    .content-card {
-      padding: 16px;
-      min-height: 0;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .section-title {
-      margin: 6px 0 0;
-      font-size: 20px;
-      line-height: 1.2;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 999px;
-      padding: 5px 9px;
-      background: rgba(148, 163, 184, 0.14);
-      color: var(--muted);
+    .metric {
       border: 1px solid var(--border);
-      font-size: 11px;
-      white-space: nowrap;
-    }
-
-    .alert-card {
-      padding: 12px 14px;
-      margin-bottom: 8px;
-    }
-
-    .alert-card.featured {
-      border-style: dashed;
-      padding: 12px;
-      background: rgba(30, 41, 59, 0.45);
-    }
-
-    .alert-inner {
-      background: rgba(39, 50, 70, 0.86);
-      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.75);
       border-radius: 14px;
       padding: 14px;
     }
 
-    .alert-row {
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.95rem;
+      line-height: 1;
+    }
+
+    .metric.critical strong { color: var(--critical); }
+    .metric.high strong { color: var(--high); }
+    .metric.medium strong { color: var(--medium); }
+    .metric.low strong { color: var(--low); }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .toolbar h2 {
+      font-size: 1.15rem;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button, select, input {
+      color: var(--text);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 11px;
+      font: inherit;
+      font-size: 0.86rem;
+    }
+
+    button {
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    button.active, button:hover {
+      border-color: rgba(34, 211, 238, 0.7);
+      background: rgba(34, 211, 238, 0.12);
+    }
+
+    input { min-width: 220px; }
+
+    .alert-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .alert {
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.82);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .alert-header {
       display: grid;
       grid-template-columns: auto 1fr auto;
-      gap: 10px;
+      gap: 12px;
       align-items: start;
+      padding: 13px 14px;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
+      min-width: 78px;
+      padding: 6px 8px;
       border-radius: 999px;
-      padding: 4px 8px;
-      font-size: 11px;
-      font-weight: 850;
+      font-size: 0.72rem;
+      font-weight: 900;
       text-transform: uppercase;
-      color: #fff;
-      background: var(--badge, #64748b);
+      letter-spacing: 0.08em;
+      border: 1px solid transparent;
     }
 
-    .badge.critical { --badge: rgba(255, 77, 90, 0.62); }
-    .badge.high { --badge: rgba(255, 122, 26, 0.66); }
-    .badge.medium { --badge: rgba(250, 204, 21, 0.36); color: #fef08a; }
-    .badge.low { --badge: rgba(34, 197, 94, 0.36); color: #bbf7d0; }
+    .badge.critical { color: #fecaca; border-color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.15); }
+    .badge.high { color: #fed7aa; border-color: rgba(249,115,22,0.55); background: rgba(249,115,22,0.15); }
+    .badge.medium { color: #fef3c7; border-color: rgba(234,179,8,0.55); background: rgba(234,179,8,0.14); }
+    .badge.low { color: #bbf7d0; border-color: rgba(34,197,94,0.55); background: rgba(34,197,94,0.13); }
 
-    .alert-title {
-      margin: 0 0 8px;
-      font-size: 15px;
+    .alert h3 {
+      margin: 0 0 5px;
+      font-size: 1rem;
       line-height: 1.25;
-      font-weight: 850;
     }
 
-    .featured .alert-title { font-size: 20px; margin-top: 10px; }
+    .alert h3 a { text-decoration: none; }
+    .alert h3 a:hover { color: var(--accent); }
 
     .alert-summary {
-      color: #dbe4f3;
-      line-height: 1.4;
-      margin: 0 0 8px;
-    }
-
-    .meta {
+      margin: 0;
       color: var(--muted);
-      font-size: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 12px;
-      align-items: center;
-    }
-
-    .tag-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
-    .tag { color: #bfdbfe; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.18); padding: 3px 7px; border-radius: 999px; font-size: 11px; }
-
-    a { color: #7dd3fc; text-decoration: none; font-weight: 800; }
-    a:hover { text-decoration: underline; }
-
-    .compact-note { color: var(--muted); font-size: 12px; }
-
-    .alert-summary {
+      line-height: 1.45;
+      font-size: 0.92rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
-    .featured .alert-summary { -webkit-line-clamp: 3; }
-
-    .status {
-      margin: 8px 0 0;
+    .alert-meta {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 0.78rem;
+      margin-top: 6px;
     }
 
-    .error {
-      border-color: rgba(255, 77, 90, 0.45);
-      background: rgba(127, 29, 29, 0.2);
+    .alert-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      align-items: center;
+      white-space: nowrap;
     }
 
-    @media (max-width: 1100px) {
+    .link-btn {
+      text-decoration: none;
+      color: var(--accent);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .details {
+      display: none;
+      border-top: 1px solid var(--border);
+      padding: 0 14px 14px 104px;
+      color: var(--muted);
+      font-size: 0.91rem;
+      line-height: 1.5;
+    }
+
+    .alert.open .details { display: block; }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0;
+    }
+
+    .tag {
+      color: #cbd5e1;
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+    }
+
+    .footer {
+      color: var(--muted);
+      margin-top: 18px;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 28px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
       .hero { grid-template-columns: 1fr; }
       .metrics { grid-template-columns: repeat(2, 1fr); }
-      .grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 640px) {
-      .page { width: min(100% - 28px, 1480px); margin-top: 18px; }
-      .hero, .content-card { padding: 18px; }
-      .metrics { grid-template-columns: 1fr; }
-      .alert-row { grid-template-columns: 1fr; }
+      .metric.total { grid-column: span 2; }
+      .alert-header { grid-template-columns: 1fr; }
+      .alert-actions { justify-content: flex-start; }
+      .details { padding-left: 14px; }
+      input { min-width: 100%; }
+      .controls { width: 100%; }
+      .controls > * { flex: 1; }
     }
   </style>
 </head>
 <body>
   <main class="page">
     <section class="hero">
-      <div>
-        <div class="eyebrow">BleepingComputer RSS</div>
+      <div class="card">
+        <p class="eyebrow">BleepingComputer RSS</p>
         <h1>Cybersecurity Alert Dashboard</h1>
-        <p class="subtitle">Consolidated alert visibility for the last seven days.</p>
-        <p class="status" id="load-status">Loading alerts.json...</p>
+        <p class="subhead">A simple 7-day security news dashboard powered by n8n. The workflow updates <strong>alerts.json</strong>; this page renders the latest alert counts, prioritized stories, and recommended next steps.</p>
       </div>
-      <div class="hero-card">
-        <div class="label">Local Time</div>
-        <div class="hero-value" id="local-time">--:--</div>
-        <div class="hero-subtext" id="local-date">Loading date</div>
-      </div>
-      <div class="hero-card">
-        <div class="label">Source</div>
-        <div class="hero-value" id="source-name">RSS</div>
-        <div class="hero-subtext" id="source-details">BleepingComputer security feed</div>
-      </div>
-    </section>
-
-    <section class="metrics">
-      <div class="metric-card" style="--accent: var(--critical)">
-        <div class="label">Critical</div>
-        <div class="metric-value" id="count-critical">0</div>
-      </div>
-      <div class="metric-card" style="--accent: var(--high)">
-        <div class="label">High</div>
-        <div class="metric-value" id="count-high">0</div>
-      </div>
-      <div class="metric-card" style="--accent: var(--medium)">
-        <div class="label">Medium</div>
-        <div class="metric-value" id="count-medium">0</div>
-      </div>
-      <div class="metric-card" style="--accent: var(--low)">
-        <div class="label">Low</div>
-        <div class="metric-value" id="count-low">0</div>
-      </div>
-    </section>
-
-    <section class="grid">
-      <div class="content-card">
-        <div class="card-header">
+      <div class="card status-card">
+        <div class="time-status">
           <div>
-            <div class="eyebrow">Rotating Alert</div>
-            <h2 class="section-title">Current Focus</h2>
+            <div class="mini-label">Local Time</div>
+            <div class="mini-value" id="localTime">--:--</div>
           </div>
-          <span class="pill" id="updated-pill">Updated --</span>
         </div>
-        <div class="alert-card featured">
-          <div class="alert-inner" id="current-focus"></div>
-        </div>
-      </div>
-
-      <div class="content-card">
-        <div class="card-header">
-          <div>
-            <div class="eyebrow">7-Day Feed</div>
-            <h2 class="section-title">Recent Alerts</h2>
-          </div>
-          <span class="pill" id="total-pill">0 alerts</span>
-        </div>
-        <div id="recent-alerts"></div>
+        <div class="meta" id="statusLine">Loading alerts.json...</div>
       </div>
     </section>
+
+    <section class="metrics" aria-label="Severity totals">
+      <div class="metric critical"><span>Critical</span><strong id="criticalCount">0</strong></div>
+      <div class="metric high"><span>High</span><strong id="highCount">0</strong></div>
+      <div class="metric medium"><span>Medium</span><strong id="mediumCount">0</strong></div>
+      <div class="metric low"><span>Low</span><strong id="lowCount">0</strong></div>
+      <div class="metric total"><span>Total</span><strong id="totalCount">0</strong></div>
+    </section>
+
+    <section class="card">
+      <div class="toolbar">
+        <h2>7-Day Feed</h2>
+        <div class="controls">
+          <button type="button" class="filter active" data-filter="all">All</button>
+          <button type="button" class="filter" data-filter="critical">Critical</button>
+          <button type="button" class="filter" data-filter="high">High</button>
+          <button type="button" class="filter" data-filter="medium">Medium</button>
+          <button type="button" class="filter" data-filter="low">Low</button>
+          <select id="limitSelect" title="Visible alerts">
+            <option value="10">10 alerts</option>
+            <option value="12" selected>12 alerts</option>
+            <option value="999">All alerts</option>
+          </select>
+          <input id="searchBox" type="search" placeholder="Search title, tag, summary..." />
+        </div>
+      </div>
+      <div id="alertList" class="alert-list"></div>
+    </section>
+
+    <p class="footer">Static page. Live data file: <code>alerts.json</code>. Normal n8n operation should update only <code>alerts.json</code>.</p>
   </main>
 
   <script>
-    const DASHBOARD_URL = './alerts.json';
-    const FALLBACK_DATA = {
+    const state = {
+      data: null,
+      alerts: [],
+      filter: 'all',
+      query: '',
+      limit: 12
+    };
+
+    const fallbackData = {
       generatedAt: new Date().toISOString(),
       source: 'BleepingComputer',
       windowDays: 7,
       counts: { critical: 0, high: 0, medium: 1, low: 0, total: 1 },
-      topAlert: {
-        id: 'dashboard-initialized',
-        source: 'BleepingComputer',
-        sourceType: 'RSS',
-        title: 'Dashboard initialized',
-        summary: 'n8n will replace this file with current alert data.',
-        url: 'https://www.bleepingcomputer.com/',
-        publishedAt: '2026-06-29T00:00:00.000Z',
-        severity: 'medium',
-        tags: ['Initial'],
-        category: 'Cybersecurity News',
-        recommendedAction: 'Waiting for n8n workflow update.',
-        dedupeKey: 'dashboard-initialized'
-      },
-      alerts: []
+      alerts: [
+        {
+          id: 'dashboard-initialized',
+          source: 'BleepingComputer',
+          sourceType: 'RSS',
+          title: 'Dashboard initialized',
+          summary: 'n8n will replace alerts.json with current BleepingComputer RSS data.',
+          url: 'https://www.bleepingcomputer.com/',
+          publishedAt: new Date().toISOString(),
+          severity: 'medium',
+          tags: ['Initial'],
+          category: 'Cybersecurity News',
+          recommendedAction: 'Confirm the n8n workflow updates alerts.json in the GitHub repository.',
+          dedupeKey: 'dashboard-initialized'
+        }
+      ]
     };
 
+    function severityRank(severity) {
+      return { critical: 4, high: 3, medium: 2, low: 1 }[String(severity || 'low').toLowerCase()] || 0;
+    }
+
     function escapeHtml(value) {
-      return String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
+      return String(value ?? '').replace(/[&<>'"]/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[char]));
     }
 
     function formatDate(value) {
       const date = new Date(value);
       if (Number.isNaN(date.getTime())) return 'Unknown date';
-      return date.toLocaleString(undefined, {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit'
-      });
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+      }).format(date);
     }
 
-    function formatUpdated(value) {
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return 'Updated --';
-      return `Updated ${date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;
+    function daysAgoCutoff(days) {
+      return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     }
 
-    function normalizeDashboard(data) {
-      const alerts = Array.isArray(data.alerts) ? data.alerts : [];
-      const counts = data.counts || {};
-      const calculated = alerts.reduce((acc, alert) => {
+    async function loadData() {
+      try {
+        const response = await fetch(`./alerts.json?v=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        state.data = await response.json();
+        document.getElementById('statusLine').textContent = `Updated ${formatDate(state.data.generatedAt)} | ${state.data.source || 'BleepingComputer'} | ${state.data.windowDays || 7}-day window`;
+      } catch (error) {
+        console.error('Unable to load alerts.json:', error);
+        state.data = fallbackData;
+        document.getElementById('statusLine').textContent = 'Using fallback data. Confirm alerts.json is published at the repository root.';
+      }
+
+      normalizeData();
+      renderMetrics();
+      renderAlerts();
+    }
+
+    function normalizeData() {
+      const windowDays = Number(state.data.windowDays || 7);
+      const cutoff = daysAgoCutoff(windowDays);
+      state.alerts = Array.isArray(state.data.alerts) ? state.data.alerts : [];
+      state.alerts = state.alerts
+        .filter(alert => {
+          const date = new Date(alert.publishedAt || state.data.generatedAt || Date.now());
+          return !Number.isNaN(date.getTime()) && date >= cutoff;
+        })
+        .sort((a, b) => {
+          const sev = severityRank(b.severity) - severityRank(a.severity);
+          if (sev !== 0) return sev;
+          return new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0);
+        });
+    }
+
+    function computeCounts() {
+      return state.alerts.reduce((acc, alert) => {
         const sev = String(alert.severity || 'low').toLowerCase();
-        if (!acc[sev] && acc[sev] !== 0) acc[sev] = 0;
-        acc[sev] += 1;
+        acc[sev] = (acc[sev] || 0) + 1;
         acc.total += 1;
         return acc;
       }, { critical: 0, high: 0, medium: 0, low: 0, total: 0 });
-
-      return {
-        ...data,
-        generatedAt: data.generatedAt || new Date().toISOString(),
-        source: data.source || 'BleepingComputer',
-        windowDays: Number(data.windowDays || 7),
-        counts: {
-          critical: Number(counts.critical ?? calculated.critical ?? 0),
-          high: Number(counts.high ?? calculated.high ?? 0),
-          medium: Number(counts.medium ?? calculated.medium ?? 0),
-          low: Number(counts.low ?? calculated.low ?? 0),
-          total: Number(counts.total ?? calculated.total ?? alerts.length)
-        },
-        topAlert: data.topAlert || alerts[0] || FALLBACK_DATA.topAlert,
-        alerts: alerts.length ? alerts : [data.topAlert || FALLBACK_DATA.topAlert]
-      };
     }
 
-    function severityClass(severity) {
-      const sev = String(severity || 'low').toLowerCase();
-      return ['critical', 'high', 'medium', 'low'].includes(sev) ? sev : 'low';
+    function renderMetrics() {
+      const counts = computeCounts();
+      document.getElementById('criticalCount').textContent = counts.critical;
+      document.getElementById('highCount').textContent = counts.high;
+      document.getElementById('mediumCount').textContent = counts.medium;
+      document.getElementById('lowCount').textContent = counts.low;
+      document.getElementById('totalCount').textContent = counts.total;
     }
 
-    function renderTags(tags) {
-      if (!Array.isArray(tags) || tags.length === 0) return '';
-      return `<div class="tag-list">${tags.slice(0, 6).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>`;
+    function filteredAlerts() {
+      const query = state.query.trim().toLowerCase();
+      return state.alerts.filter(alert => {
+        const sev = String(alert.severity || 'low').toLowerCase();
+        if (state.filter !== 'all' && sev !== state.filter) return false;
+        if (!query) return true;
+        const haystack = [
+          alert.title,
+          alert.summary,
+          alert.recommendedAction,
+          alert.category,
+          ...(Array.isArray(alert.tags) ? alert.tags : [])
+        ].filter(Boolean).join(' ').toLowerCase();
+        return haystack.includes(query);
+      }).slice(0, state.limit);
     }
 
-    function renderAlert(alert, featured = false) {
-      const sev = severityClass(alert.severity);
-      const title = escapeHtml(alert.title || 'Untitled alert');
-      const summary = escapeHtml(alert.summary || 'No summary provided.');
-      const source = escapeHtml(alert.source || 'BleepingComputer');
-      const published = formatDate(alert.publishedAt);
-      const url = alert.url || '#';
-      const action = alert.recommendedAction ? `<p class="alert-summary"><strong>Recommended action:</strong> ${escapeHtml(alert.recommendedAction)}</p>` : '';
+    function renderAlerts() {
+      const list = document.getElementById('alertList');
+      const alerts = filteredAlerts();
 
-      if (featured) {
+      if (!alerts.length) {
+        list.innerHTML = '<div class="empty">No alerts match the current filter.</div>';
+        return;
+      }
+
+      list.innerHTML = alerts.map((alert, index) => {
+        const severity = String(alert.severity || 'low').toLowerCase();
+        const tags = Array.isArray(alert.tags) ? alert.tags : [];
+        const id = escapeHtml(alert.id || `alert-${index}`);
+        const url = escapeHtml(alert.url || '#');
         return `
-          <div class="alert-row">
-            <div><span class="badge ${sev}">${escapeHtml(sev)}</span></div>
-            <div class="meta">${published}</div>
-          </div>
-          <h3 class="alert-title">${title}</h3>
-          <p class="alert-summary">${summary}</p>
-          ${action}
-          ${renderTags(alert.tags)}
-          <div class="meta" style="margin-top: 18px; justify-content: space-between;">
-            <span>${source}</span>
-            <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Open source</a>
-          </div>
-        `;
-      }
-
-      return `
-        <article class="alert-card">
-          <div class="alert-row">
-            <span class="badge ${sev}">${escapeHtml(sev)}</span>
-            <div>
-              <h3 class="alert-title">${title}</h3>
-              <p class="alert-summary">${summary}</p>
-              <div class="meta"><span>${source}</span><span>·</span><span>${published}</span></div>
-              ${renderTags(alert.tags)}
+          <article class="alert" id="${id}">
+            <div class="alert-header">
+              <div><span class="badge ${severity}">${escapeHtml(severity)}</span></div>
+              <div>
+                <h3><a href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(alert.title || 'Untitled alert')}</a></h3>
+                <p class="alert-summary">${escapeHtml(alert.summary || 'No summary provided.')}</p>
+                <div class="alert-meta">${escapeHtml(alert.source || 'BleepingComputer')} | ${escapeHtml(alert.category || 'Cybersecurity News')} | ${formatDate(alert.publishedAt)}</div>
+              </div>
+              <div class="alert-actions">
+                <button type="button" onclick="toggleDetails('${id}')">Details</button>
+                <a class="link-btn" href="${url}" target="_blank" rel="noopener noreferrer">Source</a>
+              </div>
             </div>
-            <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">View</a>
-          </div>
-        </article>
-      `;
+            <div class="details">
+              <div class="tag-row">${tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('') || '<span class="tag">No tags</span>'}</div>
+              <strong>Recommended action:</strong>
+              <div>${escapeHtml(alert.recommendedAction || 'Review for applicability and determine whether action is required.')}</div>
+              <div class="alert-meta">Dedupe key: ${escapeHtml(alert.dedupeKey || alert.id || '')}</div>
+            </div>
+          </article>
+        `;
+      }).join('');
     }
 
-    function renderDashboard(rawData) {
-      const data = normalizeDashboard(rawData);
-      const counts = data.counts;
-
-      document.getElementById('count-critical').textContent = counts.critical;
-      document.getElementById('count-high').textContent = counts.high;
-      document.getElementById('count-medium').textContent = counts.medium;
-      document.getElementById('count-low').textContent = counts.low;
-      document.getElementById('total-pill').textContent = `${counts.total} ${counts.total === 1 ? 'alert' : 'alerts'}`;
-      document.getElementById('updated-pill').textContent = formatUpdated(data.generatedAt);
-
-      const focus = data.topAlert || data.alerts[0] || FALLBACK_DATA.topAlert;
-      document.getElementById('current-focus').innerHTML = renderAlert(focus, true);
-
-      const alerts = data.alerts || [];
-      document.getElementById('recent-alerts').innerHTML = alerts.slice(0, 20).map(alert => renderAlert(alert)).join('');
-      document.getElementById('source-name').textContent = data.source || 'RSS';
-      document.getElementById('source-details').textContent = `${counts.total} alerts · ${data.windowDays}-day window`;
-      document.getElementById('load-status').textContent = `Loaded ${counts.total} alerts from ${data.source}.`;
-    }
-
-    async function loadDashboard() {
-      try {
-        const response = await fetch(`${DASHBOARD_URL}?v=${Date.now()}`, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        renderDashboard(data);
-      } catch (error) {
-        console.error('Failed to load alerts.json', error);
-        document.querySelector('.hero').classList.add('error');
-        document.getElementById('load-status').textContent = `Could not load alerts.json. Showing fallback data. ${error.message}`;
-        renderDashboard(FALLBACK_DATA);
-      }
+    function toggleDetails(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('open');
     }
 
     function updateClock() {
       const now = new Date();
-      document.getElementById('local-time').textContent = now.toLocaleTimeString(undefined, {
-        hour: 'numeric',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-      document.getElementById('local-date').textContent = now.toLocaleDateString(undefined, {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      document.getElementById('localTime').textContent = new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric', minute: '2-digit', second: '2-digit'
+      }).format(now);
     }
+
+    document.querySelectorAll('.filter').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+        button.classList.add('active');
+        state.filter = button.dataset.filter;
+        renderAlerts();
+      });
+    });
+
+    document.getElementById('searchBox').addEventListener('input', event => {
+      state.query = event.target.value;
+      renderAlerts();
+    });
+
+    document.getElementById('limitSelect').addEventListener('change', event => {
+      state.limit = Number(event.target.value);
+      renderAlerts();
+    });
 
     updateClock();
     setInterval(updateClock, 1000);
-    loadDashboard();
-    setInterval(loadDashboard, 5 * 60 * 1000);
+    loadData();
   </script>
 </body>
 </html>
