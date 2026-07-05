@@ -1,11 +1,43 @@
-[
-  {
-    "title": "Dashboard initialized",
+{
+  "generatedAt": "2026-07-05T22:07:57.807Z",
+  "source": "BleepingComputer",
+  "sourceUrl": "https://www.bleepingcomputer.com/rss-feeds/",
+  "windowDays": 7,
+  "counts": {
+    "critical": 1,
+    "high": 4,
+    "medium": 3,
+    "low": 0,
+    "total": 8
+  },
+  "topAlert": {
+    "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
     "source": "BleepingComputer",
-    "severity": "Medium",
+    "sourceType": "RSS",
+    "title": "CISA: Microsoft SharePoint RCE flaw now actively exploited",
+    "summary": "CISA warned that attackers have begun exploiting a high-severity Microsoft SharePoint remote code execution vulnerability patched in May.",
+    "url": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/",
+    "publishedAt": "2026-07-02T10:52:43.000Z",
+    "severity": "critical",
+    "tags": ["Microsoft", "SharePoint", "CISA", "RCE"],
     "category": "Cybersecurity News",
-    "published": "2026-06-29T00:00:00-07:00",
-    "link": "https://www.bleepingcomputer.com/",
-    "summary": "n8n will replace this file with current alert data."
-  }
-]
+    "recommendedAction": "Review immediately. Check exposure, vendor advisories, patch status, SIEM/EDR alerts, and known indicators of compromise.",
+    "dedupeKey": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/"
+  },
+  "alerts": [
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "CISA: Microsoft SharePoint RCE flaw now actively exploited",
+      "summary": "CISA warned that attackers have begun exploiting a high-severity Microsoft SharePoint remote code execution vulnerability patched in May.",
+      "url": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/",
+      "publishedAt": "2026-07-02T10:52:43.000Z",
+      "severity": "critical",
+      "tags": ["Microsoft", "SharePoint", "CISA", "RCE"],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review immediately. Check exposure, vendor advisories, patch status, SIEM/EDR alerts, and known indicators of compromise.",
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/"
+    }
+  ]
+}
