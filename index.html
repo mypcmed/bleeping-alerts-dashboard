@@ -452,17 +452,43 @@
     function normalizeData() {
       const windowDays = Number(state.data.windowDays || 7);
       const cutoff = daysAgoCutoff(windowDays);
-      state.alerts = Array.isArray(state.data.alerts) ? state.data.alerts : [];
-      state.alerts = state.alerts
-        .filter(alert => {
-          const date = new Date(alert.publishedAt || state.data.generatedAt || Date.now());
-          return !Number.isNaN(date.getTime()) && date >= cutoff;
-        })
-        .sort((a, b) => {
-          const sev = severityRank(b.severity) - severityRank(a.severity);
-          if (sev !== 0) return sev;
-          return new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0);
-        });
+      const rawAlerts = Array.isArray(state.data.alerts) ? state.data.alerts : [];
+
+      const normalized = rawAlerts.map((alert, index) => {
+        const publishedAt = alert.publishedAt || alert.isoDate || alert.pubDate || state.data.generatedAt || new Date().toISOString();
+        return {
+          id: alert.id || `alert-${index}`,
+          source: alert.source || state.data.source || 'BleepingComputer',
+          sourceType: alert.sourceType || 'RSS',
+          title: alert.title || 'Untitled alert',
+          summary: alert.summary || alert.contentSnippet || alert.description || '',
+          url: alert.url || alert.link || '#',
+          publishedAt,
+          severity: String(alert.severity || 'low').toLowerCase(),
+          tags: Array.isArray(alert.tags) ? alert.tags : [],
+          category: alert.category || 'Cybersecurity News',
+          recommendedAction: alert.recommendedAction || 'Review for applicability and determine whether action is required.',
+          dedupeKey: alert.dedupeKey || alert.url || alert.link || alert.title || `alert-${index}`
+        };
+      });
+
+      const inWindow = normalized.filter(alert => {
+        const date = new Date(alert.publishedAt);
+        return !Number.isNaN(date.getTime()) && date >= cutoff;
+      });
+
+      state.alerts = inWindow.sort((a, b) => {
+        const sev = severityRank(b.severity) - severityRank(a.severity);
+        if (sev !== 0) return sev;
+        return new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0);
+      });
+
+      const statusLine = document.getElementById('statusLine');
+      if (rawAlerts.length && !state.alerts.length) {
+        statusLine.textContent += ` | Loaded ${rawAlerts.length} alerts, but none are inside the ${windowDays}-day display window.`;
+      } else {
+        statusLine.textContent += ` | Loaded ${state.alerts.length} visible alerts.`;
+      }
     }
 
     function computeCounts() {
