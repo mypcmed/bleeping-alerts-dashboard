@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-06T02:25:01.670Z",
+  "generatedAt": "2026-07-06T02:39:22.219Z",
   "source": "BleepingComputer",
   "sourceUrl": "https://www.bleepingcomputer.com/rss-feeds/",
   "windowDays": 7,
@@ -12,19 +12,28 @@
   },
   "summary": {
     "immediateReviewCount": 5,
-    "highestPriorityScore": 0,
+    "highestPriorityScore": 100,
     "topTags": [
       "Microsoft",
       "Ransomware",
       "SharePoint",
       "CISA",
       "RCE",
-      "Cisco",
-      "Data Breach",
       "Fortinet",
       "Credential Theft",
+      "Cisco",
+      "Data Breach",
       "Phishing"
-    ]
+    ],
+    "remediationStats": {
+      "totalWithRemediation": 8,
+      "vendorValidationRequired": 8,
+      "confidence": {
+        "high": 0,
+        "medium": 6,
+        "low": 2
+      }
+    }
   },
   "topAlert": {
     "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
@@ -42,12 +51,25 @@
       "RCE"
     ],
     "category": "Cybersecurity News",
-    "recommendedAction": "Review immediately. Check exposure, vendor advisories, patch status, SIEM/EDR alerts, and known indicators of compromise.",
-    "businessImpact": "",
-    "affectedTechnology": [],
-    "threatType": [],
-    "priorityScore": 0,
+    "recommendedAction": "Review immediately. Validate exposure, affected products, patch status, SIEM/EDR activity, and available indicators of compromise.",
+    "businessImpact": "Potential business impact includes unauthorized code execution, system compromise, privilege escalation, lateral movement, and service disruption.",
+    "affectedTechnology": [
+      "Microsoft",
+      "SharePoint"
+    ],
+    "threatType": [
+      "Remote Code Execution",
+      "Exploitation",
+      "Vulnerability"
+    ],
+    "priorityScore": 100,
     "reviewStatus": "unreviewed",
+    "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n3. Identify the relevant CVE or vendor advisory and confirm affected versions.\n4. Check patch availability, maintenance windows, and compensating controls.\n5. Prioritize patching based on severity, exploitability, exposure, and business criticality.\n6. Treat as urgent. Check CISA KEV/vendor guidance, confirm internet exposure, and search SIEM/EDR logs for related indicators.\n7. If exposure is confirmed, consider emergency change control, temporary isolation, access restriction, or compensating controls.\n14. Review Microsoft security guidance, patch status, Defender/EDR telemetry, and exposure of affected servers or services.\n15. Document review results, remediation decision, owner, due date, and evidence for audit and incident-response records.",
+    "remediationShort": "Treat as urgent. Validate exposure, check for indicators of compromise, apply vendor mitigation, and patch or isolate affected systems.",
+    "remediationSource": "Generated from alert text",
+    "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/",
+    "remediationConfidence": "medium",
+    "requiresVendorValidation": true,
     "dedupeKey": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/"
   },
   "alerts": [
@@ -67,76 +89,26 @@
         "RCE"
       ],
       "category": "Cybersecurity News",
-      "recommendedAction": "Review immediately. Check exposure, vendor advisories, patch status, SIEM/EDR alerts, and known indicators of compromise.",
-      "businessImpact": "",
-      "affectedTechnology": [],
-      "threatType": [],
-      "priorityScore": 0,
+      "recommendedAction": "Review immediately. Validate exposure, affected products, patch status, SIEM/EDR activity, and available indicators of compromise.",
+      "businessImpact": "Potential business impact includes unauthorized code execution, system compromise, privilege escalation, lateral movement, and service disruption.",
+      "affectedTechnology": [
+        "Microsoft",
+        "SharePoint"
+      ],
+      "threatType": [
+        "Remote Code Execution",
+        "Exploitation",
+        "Vulnerability"
+      ],
+      "priorityScore": 100,
       "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n3. Identify the relevant CVE or vendor advisory and confirm affected versions.\n4. Check patch availability, maintenance windows, and compensating controls.\n5. Prioritize patching based on severity, exploitability, exposure, and business criticality.\n6. Treat as urgent. Check CISA KEV/vendor guidance, confirm internet exposure, and search SIEM/EDR logs for related indicators.\n7. If exposure is confirmed, consider emergency change control, temporary isolation, access restriction, or compensating controls.\n14. Review Microsoft security guidance, patch status, Defender/EDR telemetry, and exposure of affected servers or services.\n15. Document review results, remediation decision, owner, due date, and evidence for audit and incident-response records.",
+      "remediationShort": "Treat as urgent. Validate exposure, check for indicators of compromise, apply vendor mitigation, and patch or isolate affected systems.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/",
+      "remediationConfidence": "medium",
+      "requiresVendorValidation": true,
       "dedupeKey": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/"
-    },
-    {
-      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
-      "source": "BleepingComputer",
-      "sourceType": "RSS",
-      "title": "JadePuffer ransomware used AI agent to automate entire attack",
-      "summary": "Researchers identified what they believe is the first documented case of a ransomware operation, JadePuffer, conducted entirely by a large language model (LLM) agent. [...]",
-      "url": "https://www.bleepingcomputer.com/news/security/jadepuffer-ransomware-used-ai-agent-to-automate-entire-attack/",
-      "publishedAt": "2026-07-04T14:16:38.000Z",
-      "severity": "high",
-      "tags": [
-        "Ransomware"
-      ],
-      "category": "Cybersecurity News",
-      "recommendedAction": "Review today. Validate whether affected products, services, vendors, or externally exposed systems exist in the environment.",
-      "businessImpact": "",
-      "affectedTechnology": [],
-      "threatType": [],
-      "priorityScore": 0,
-      "reviewStatus": "unreviewed",
-      "dedupeKey": "https://www.bleepingcomputer.com/news/security/jadepuffer-ransomware-used-ai-agent-to-automate-entire-attack/"
-    },
-    {
-      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
-      "source": "BleepingComputer",
-      "sourceType": "RSS",
-      "title": "Cisco finally confirms attackers exploiting Unified CM flaw",
-      "summary": "Cisco confirmed that attackers are now exploiting a Unified Communications Manager (Unified CM) vulnerability patched in early June. [...]",
-      "url": "https://www.bleepingcomputer.com/news/security/cisco-finally-confirms-attackers-exploiting-unified-cm-flaw/",
-      "publishedAt": "2026-07-02T11:35:25.000Z",
-      "severity": "high",
-      "tags": [
-        "Cisco"
-      ],
-      "category": "Cybersecurity News",
-      "recommendedAction": "Review today. Validate whether affected products, services, vendors, or externally exposed systems exist in the environment.",
-      "businessImpact": "",
-      "affectedTechnology": [],
-      "threatType": [],
-      "priorityScore": 0,
-      "reviewStatus": "unreviewed",
-      "dedupeKey": "https://www.bleepingcomputer.com/news/security/cisco-finally-confirms-attackers-exploiting-unified-cm-flaw/"
-    },
-    {
-      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
-      "source": "BleepingComputer",
-      "sourceType": "RSS",
-      "title": "Medtronic notifies customers impacted by ShinyHunters data breach",
-      "summary": "Healthcare device firm Medtronic is notifying affected customers about a data breach that exposed their personal data to an unauthorized third party. [...]",
-      "url": "https://www.bleepingcomputer.com/news/security/medtronic-notifies-customers-impacted-by-shinyhunters-data-breach/",
-      "publishedAt": "2026-07-02T04:25:42.000Z",
-      "severity": "high",
-      "tags": [
-        "Data Breach"
-      ],
-      "category": "Cybersecurity News",
-      "recommendedAction": "Review today. Validate whether affected products, services, vendors, or externally exposed systems exist in the environment.",
-      "businessImpact": "",
-      "affectedTechnology": [],
-      "threatType": [],
-      "priorityScore": 0,
-      "reviewStatus": "unreviewed",
-      "dedupeKey": "https://www.bleepingcomputer.com/news/security/medtronic-notifies-customers-impacted-by-shinyhunters-data-breach/"
     },
     {
       "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
@@ -153,13 +125,114 @@
         "Credential Theft"
       ],
       "category": "Cybersecurity News",
-      "recommendedAction": "Review today. Validate whether affected products, services, vendors, or externally exposed systems exist in the environment.",
-      "businessImpact": "",
-      "affectedTechnology": [],
-      "threatType": [],
-      "priorityScore": 0,
+      "recommendedAction": "Review today. Determine whether affected technology exists in the environment and prioritize remediation if exposure is confirmed.",
+      "businessImpact": "Potential business impact includes operational disruption, data encryption, extortion risk, recovery cost, and possible production downtime.",
+      "affectedTechnology": [
+        "Fortinet"
+      ],
+      "threatType": [
+        "Ransomware",
+        "Credential Theft"
+      ],
+      "priorityScore": 70,
       "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n8. Review EDR detections, recent authentication events, backup health, privileged account activity, and suspicious lateral movement.\n9. Confirm immutable/offline backups are healthy before making major remediation changes.\n10. Review impacted identities, enforce MFA, revoke suspicious sessions, reset affected credentials, and inspect mailbox rules.\n11. Search email security logs and endpoint telemetry for related indicators.\n12. Validate edge device firmware, external exposure, management interface access, VPN logs, and administrative login activity.\n13. Restrict management interfaces to trusted networks and apply vendor mitigations if patching is not immediately possible.\n15. Assign an owner and due date. Track remediation or compensating-control decision.",
+      "remediationShort": "Prioritize containment readiness, EDR review, backup validation, exposed-service review, and rapid patching or mitigation if affected systems are present.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/fortibleed-credential-theft-campaign-linked-to-lynx-ransomware/",
+      "remediationConfidence": "medium",
+      "requiresVendorValidation": true,
       "dedupeKey": "https://www.bleepingcomputer.com/news/security/fortibleed-credential-theft-campaign-linked-to-lynx-ransomware/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "JadePuffer ransomware used AI agent to automate entire attack",
+      "summary": "Researchers identified what they believe is the first documented case of a ransomware operation, JadePuffer, conducted entirely by a large language model (LLM) agent. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/jadepuffer-ransomware-used-ai-agent-to-automate-entire-attack/",
+      "publishedAt": "2026-07-04T14:16:38.000Z",
+      "severity": "high",
+      "tags": [
+        "Ransomware"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review today. Determine whether affected technology exists in the environment and prioritize remediation if exposure is confirmed.",
+      "businessImpact": "Potential business impact includes operational disruption, data encryption, extortion risk, recovery cost, and possible production downtime.",
+      "affectedTechnology": [],
+      "threatType": [
+        "Ransomware"
+      ],
+      "priorityScore": 60,
+      "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n8. Review EDR detections, recent authentication events, backup health, privileged account activity, and suspicious lateral movement.\n9. Confirm immutable/offline backups are healthy before making major remediation changes.\n15. Assign an owner and due date. Track remediation or compensating-control decision.",
+      "remediationShort": "Prioritize containment readiness, EDR review, backup validation, exposed-service review, and rapid patching or mitigation if affected systems are present.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/jadepuffer-ransomware-used-ai-agent-to-automate-entire-attack/",
+      "remediationConfidence": "low",
+      "requiresVendorValidation": true,
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/jadepuffer-ransomware-used-ai-agent-to-automate-entire-attack/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "Cisco finally confirms attackers exploiting Unified CM flaw",
+      "summary": "Cisco confirmed that attackers are now exploiting a Unified Communications Manager (Unified CM) vulnerability patched in early June. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/cisco-finally-confirms-attackers-exploiting-unified-cm-flaw/",
+      "publishedAt": "2026-07-02T11:35:25.000Z",
+      "severity": "high",
+      "tags": [
+        "Cisco"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review today. Determine whether affected technology exists in the environment and prioritize remediation if exposure is confirmed.",
+      "businessImpact": "Potential business impact depends on exposure. Validate whether affected systems, vendors, or externally reachable services exist in the environment.",
+      "affectedTechnology": [
+        "Cisco"
+      ],
+      "threatType": [
+        "Exploitation",
+        "Vulnerability"
+      ],
+      "priorityScore": 40,
+      "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n3. Identify the relevant CVE or vendor advisory and confirm affected versions.\n4. Check patch availability, maintenance windows, and compensating controls.\n5. Prioritize patching based on severity, exploitability, exposure, and business criticality.\n12. Validate edge device firmware, external exposure, management interface access, VPN logs, and administrative login activity.\n13. Restrict management interfaces to trusted networks and apply vendor mitigations if patching is not immediately possible.\n15. Assign an owner and due date. Track remediation or compensating-control decision.",
+      "remediationShort": "Confirm affected versions, review vendor advisory, prioritize patching, and document compensating controls if patching is delayed.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/cisco-finally-confirms-attackers-exploiting-unified-cm-flaw/",
+      "remediationConfidence": "medium",
+      "requiresVendorValidation": true,
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/cisco-finally-confirms-attackers-exploiting-unified-cm-flaw/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "Medtronic notifies customers impacted by ShinyHunters data breach",
+      "summary": "Healthcare device firm Medtronic is notifying affected customers about a data breach that exposed their personal data to an unauthorized third party. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/medtronic-notifies-customers-impacted-by-shinyhunters-data-breach/",
+      "publishedAt": "2026-07-02T04:25:42.000Z",
+      "severity": "high",
+      "tags": [
+        "Data Breach"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review today. Determine whether affected technology exists in the environment and prioritize remediation if exposure is confirmed.",
+      "businessImpact": "Potential business impact includes data exposure, regulatory reporting obligations, customer notification, vendor risk review, and reputational impact.",
+      "affectedTechnology": [],
+      "threatType": [
+        "Data Breach"
+      ],
+      "priorityScore": 40,
+      "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n15. Assign an owner and due date. Track remediation or compensating-control decision.",
+      "remediationShort": "Same-day review recommended. Confirm whether affected technology exists and assign remediation ownership.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/medtronic-notifies-customers-impacted-by-shinyhunters-data-breach/",
+      "remediationConfidence": "low",
+      "requiresVendorValidation": true,
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/medtronic-notifies-customers-impacted-by-shinyhunters-data-breach/"
     },
     {
       "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
@@ -176,11 +249,21 @@
       ],
       "category": "Cybersecurity News",
       "recommendedAction": "Review Microsoft patch applicability and confirm endpoint and server update status.",
-      "businessImpact": "",
-      "affectedTechnology": [],
-      "threatType": [],
-      "priorityScore": 0,
+      "businessImpact": "Business impact appears informational unless affected technology is present in the environment.",
+      "affectedTechnology": [
+        "Microsoft"
+      ],
+      "threatType": [
+        "Phishing"
+      ],
+      "priorityScore": 25,
       "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n10. Review impacted identities, enforce MFA, revoke suspicious sessions, reset affected credentials, and inspect mailbox rules.\n11. Search email security logs and endpoint telemetry for related indicators.\n14. Review Microsoft security guidance, patch status, Defender/EDR telemetry, and exposure of affected servers or services.\n15. Track for awareness and validate applicability during normal security review.",
+      "remediationShort": "Focus on identity protection: MFA verification, session revocation, password resets where needed, mailbox rule review, and sign-in log investigation.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/artoken-phaas-exposes-eviltokens-microsoft-365-phishing-toolkit/",
+      "remediationConfidence": "medium",
+      "requiresVendorValidation": true,
       "dedupeKey": "https://www.bleepingcomputer.com/news/security/artoken-phaas-exposes-eviltokens-microsoft-365-phishing-toolkit/"
     },
     {
@@ -197,11 +280,19 @@
       ],
       "category": "Cybersecurity News",
       "recommendedAction": "Review Microsoft patch applicability and confirm endpoint and server update status.",
-      "businessImpact": "",
-      "affectedTechnology": [],
+      "businessImpact": "Business impact appears informational unless affected technology is present in the environment.",
+      "affectedTechnology": [
+        "Microsoft"
+      ],
       "threatType": [],
-      "priorityScore": 0,
+      "priorityScore": 25,
       "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n14. Review Microsoft security guidance, patch status, Defender/EDR telemetry, and exposure of affected servers or services.\n15. Track for awareness and validate applicability during normal security review.",
+      "remediationShort": "Review for applicability during normal security operations and document whether action is required.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/consentfix-and-clickfix-how-microsoft-365-accounts-are-hijacked-in-3-seconds/",
+      "remediationConfidence": "medium",
+      "requiresVendorValidation": true,
       "dedupeKey": "https://www.bleepingcomputer.com/news/security/consentfix-and-clickfix-how-microsoft-365-accounts-are-hijacked-in-3-seconds/"
     },
     {
@@ -219,11 +310,20 @@
       ],
       "category": "Cybersecurity News",
       "recommendedAction": "Review Microsoft patch applicability and confirm endpoint and server update status.",
-      "businessImpact": "",
-      "affectedTechnology": [],
+      "businessImpact": "Business impact appears informational unless affected technology is present in the environment.",
+      "affectedTechnology": [
+        "Microsoft",
+        "Windows"
+      ],
       "threatType": [],
-      "priorityScore": 0,
+      "priorityScore": 25,
       "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n14. Review Microsoft security guidance, patch status, Defender/EDR telemetry, and exposure of affected servers or services.\n15. Track for awareness and validate applicability during normal security review.",
+      "remediationShort": "Review for applicability during normal security operations and document whether action is required.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-bug-that-removed-copilot-button-in-outlook/",
+      "remediationConfidence": "medium",
+      "requiresVendorValidation": true,
       "dedupeKey": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-bug-that-removed-copilot-button-in-outlook/"
     }
   ]
