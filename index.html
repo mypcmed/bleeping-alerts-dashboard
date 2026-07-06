@@ -1,323 +1,964 @@
-const now = new Date();
-const windowDays = 7;
-const cutoff = new Date(now.getTime() - windowDays * 24 * 60 * 60 * 1000);
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Security Alert Center</title>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --panel: #ffffff;
+      --panel-soft: #f0f5fb;
+      --text: #172033;
+      --muted: #667085;
+      --line: #d9e2ef;
+      --accent: #2563eb;
+      --accent-soft: #e8f0ff;
+      --critical: #b42318;
+      --critical-soft: #fef3f2;
+      --high: #b54708;
+      --high-soft: #fffaeb;
+      --medium: #7a5b00;
+      --medium-soft: #fff8db;
+      --low: #027a48;
+      --low-soft: #ecfdf3;
+      --shadow: 0 10px 30px rgba(21, 40, 75, .08);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --sans: "Segoe UI", "Segoe UI Variable", system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
 
-// This SHA comes from the direct input to this node:
-// GitHub Get Alerts JSON → Build Dashboard JSON
-const githubSha = items[0]?.json?.sha || '';
-const githubContent = items[0]?.json?.content || '';
+    * { box-sizing: border-box; }
 
-if (!githubSha) {
-  throw new Error('Missing GitHub SHA. Run GitHub Get Alerts JSON before Build Dashboard JSON.');
-}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, .10), transparent 34rem),
+        linear-gradient(180deg, #fbfdff 0%, var(--bg) 42%, #eef3f9 100%);
+      color: var(--text);
+      font-family: var(--sans);
+    }
 
-function safeDate(value) {
-  const d = new Date(value || now);
-  return Number.isNaN(d.getTime()) ? now : d;
-}
+    a { color: inherit; }
+    button, input, select { font: inherit; }
 
-function normalizeSeverity(value) {
-  const severity = String(value || 'low').toLowerCase();
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 42px;
+    }
 
-  if (['critical', 'high', 'medium', 'low'].includes(severity)) {
-    return severity;
-  }
+    .hero {
+      background: rgba(255, 255, 255, .88);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 26px;
+      margin-bottom: 18px;
+    }
 
-  return 'low';
-}
+    .hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
 
-function severityRank(value) {
-  const severity = normalizeSeverity(value);
+    .eyebrow {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
 
-  return {
-    critical: 4,
-    high: 3,
-    medium: 2,
-    low: 1
-  }[severity] || 0;
-}
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.06;
+      letter-spacing: -0.035em;
+    }
 
-function decodeExistingAlertsFromGitHub() {
-  try {
-    if (!githubContent) {
+    .subtitle {
+      max-width: 760px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .status-card {
+      min-width: 260px;
+      padding: 0;
+      text-align: right;
+    }
+
+    .status-line {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .clock {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn, .mini-btn {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: .15s ease;
+    }
+
+    .btn:hover, .mini-btn:hover {
+      border-color: rgba(37, 99, 235, .45);
+      background: var(--accent-soft);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .grid { display: grid; gap: 14px; }
+
+    .summary-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.92);
+      border-radius: var(--radius);
+      box-shadow: 0 6px 18px rgba(21, 40, 75, .05);
+      padding: 16px;
+      cursor: pointer;
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .metric:hover, .metric.active {
+      transform: translateY(-1px);
+      border-color: rgba(37, 99, 235, .45);
+      box-shadow: var(--shadow);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .metric-value {
+      font-family: var(--mono);
+      font-size: 34px;
+      font-weight: 900;
+      margin-top: 8px;
+    }
+
+    .metric-note {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .critical-text { color: var(--critical); }
+    .high-text { color: var(--high); }
+    .medium-text { color: var(--medium); }
+    .low-text { color: var(--low); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.92);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 850;
+      letter-spacing: -0.01em;
+    }
+
+    .panel-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel-body { padding: 16px 18px 18px; }
+
+    .controls {
+      margin-bottom: 14px;
+    }
+
+    .control-pill {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) auto auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 999px;
+      padding: 7px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    }
+
+    .control-pill:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .input, .select {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 9px 12px;
+      outline: none;
+      min-height: 42px;
+    }
+
+    .input {
+      border-right: 1px solid var(--line);
+      padding-right: 14px;
+    }
+
+    .select {
+      background: #f8fafc;
+      min-width: 148px;
+      font-weight: 600;
+    }
+
+    .input:focus, .select:focus {
+      box-shadow: none;
+    }
+
+    .alert-list { display: grid; gap: 12px; }
+
+    .alert {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: var(--radius-sm);
+      padding: 14px;
+    }
+
+    .alert-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .alert-title {
+      font-size: 15px;
+      font-weight: 850;
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    .alert-title a { text-decoration: none; }
+    .alert-title a:hover { color: var(--accent); }
+
+    .meta {
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 7px;
+    }
+
+    .summary {
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 11px 0 0;
+    }
+
+    .severity {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .severity.critical { color: var(--critical); background: var(--critical-soft); border: 1px solid #fecdca; }
+    .severity.high { color: var(--high); background: var(--high-soft); border: 1px solid #fedf89; }
+    .severity.medium { color: var(--medium); background: var(--medium-soft); border: 1px solid #f5df7e; }
+    .severity.low { color: var(--low); background: var(--low-soft); border: 1px solid #abefc6; }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      font-size: 11px;
+      color: #475467;
+      background: #f2f4f7;
+      border: 1px solid #eaecf0;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    .alert-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .details {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .details.open { display: block; }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail-box {
+      background: #f8fafc;
+      border: 1px solid #e4eaf2;
+      border-radius: 12px;
+      padding: 12px;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .detail-box.full { grid-column: 1 / -1; }
+
+    .detail-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 850;
+      margin-bottom: 5px;
+    }
+
+    .remediation-text {
+      white-space: pre-wrap;
+      margin: 0;
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .review-list { display: grid; gap: 10px; }
+
+    .review-item {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .review-item-title {
+      font-weight: 850;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      background: #fbfdff;
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      text-align: center;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      display: none;
+      z-index: 20;
+      background: #172033;
+      color: white;
+      border-radius: 999px;
+      padding: 11px 14px;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .toast.show { display: block; }
+
+    @media (max-width: 900px) {
+      .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .control-pill {
+        grid-template-columns: 1fr;
+        border-radius: 18px;
+      }
+
+      .input {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        border-radius: 14px 14px 0 0;
+      }
+
+      .select {
+        min-width: 0;
+      }
+      .status-card { width: 100%; }
+    }
+
+    @media (max-width: 620px) {
+      .shell { width: min(100vw - 20px, 1180px); padding-top: 12px; }
+      .hero { padding: 18px; border-radius: 18px; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .alert-top { grid-template-columns: 1fr; }
+      .details-grid { grid-template-columns: 1fr; }
+      .metric-value { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Security Operations</div>
+          <h1>Security Alert Center</h1>
+          <p class="subtitle">A cleaner, lighter view of cybersecurity alerts. Start with the summary, review urgent items, and expand details only when remediation or source validation is needed.</p>
+        </div>
+        <div class="status-card">
+          <div id="clock" class="clock">Los Angeles PST --:--:--</div>
+          <div id="updated" class="status-line">Waiting for alerts.json...</div>
+          <div id="dataHealth" class="status-line">Loading data</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" data-command="refresh">Refresh Data</button>
+        <button class="btn" data-command="briefing">Copy Briefing</button>
+        <button class="btn" data-command="json">Open JSON</button>
+      </div>
+    </section>
+
+    <section class="grid summary-grid" aria-label="Alert summary">
+      <div class="metric" data-severity-card="critical" role="button" tabindex="0">
+        <div class="metric-label">Critical <span>urgent</span></div>
+        <div id="criticalCount" class="metric-value critical-text">0</div>
+        <div class="metric-note">Immediate review</div>
+      </div>
+      <div class="metric" data-severity-card="high" role="button" tabindex="0">
+        <div class="metric-label">High <span>today</span></div>
+        <div id="highCount" class="metric-value high-text">0</div>
+        <div class="metric-note">Same-day review</div>
+      </div>
+      <div class="metric" data-severity-card="medium" role="button" tabindex="0">
+        <div class="metric-label">Medium <span>track</span></div>
+        <div id="mediumCount" class="metric-value medium-text">0</div>
+        <div class="metric-note">Normal review</div>
+      </div>
+      <div class="metric" data-severity-card="low" role="button" tabindex="0">
+        <div class="metric-label">Low <span>aware</span></div>
+        <div id="lowCount" class="metric-value low-text">0</div>
+        <div class="metric-note">Awareness</div>
+      </div>
+      <div class="metric active" data-severity-card="all" role="button" tabindex="0">
+        <div class="metric-label">Total <span>loaded</span></div>
+        <div id="totalCount" class="metric-value">0</div>
+        <div class="metric-note"><span id="visibleCount">0</span> visible</div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Needs Review</div>
+            <div class="panel-subtitle">Critical, high, or priority score 70+ alerts.</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="reviewList" class="review-list"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Alert Feed</div>
+            <div class="panel-subtitle">Use filters to reduce noise. Open Details only when you need remediation, impact, or source review.</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="controls">
+            <div class="control-pill">
+              <input id="search" class="input" placeholder="Search alerts..." />
+              <select id="severityFilter" class="select" aria-label="Severity filter">
+                <option value="all">Severity: All</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+              <select id="limit" class="select" aria-label="Alert limit">
+                <option value="10">Show: 10</option>
+                <option value="12" selected>Show: 12</option>
+                <option value="all">Show: All</option>
+              </select>
+            </div>
+          </div>
+          <div id="alertList" class="alert-list"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const state = {
+      data: null,
+      alerts: [],
+      filter: 'all',
+      search: '',
+      limit: '12'
+    };
+
+    const els = {
+      clock: document.getElementById('clock'),
+      updated: document.getElementById('updated'),
+      dataHealth: document.getElementById('dataHealth'),
+      criticalCount: document.getElementById('criticalCount'),
+      highCount: document.getElementById('highCount'),
+      mediumCount: document.getElementById('mediumCount'),
+      lowCount: document.getElementById('lowCount'),
+      totalCount: document.getElementById('totalCount'),
+      visibleCount: document.getElementById('visibleCount'),
+      reviewList: document.getElementById('reviewList'),
+      alertList: document.getElementById('alertList'),
+      search: document.getElementById('search'),
+      severityFilter: document.getElementById('severityFilter'),
+      limit: document.getElementById('limit'),
+      toast: document.getElementById('toast')
+    };
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+    }
+
+    function formatDate(value) {
+      if (!value) return 'Unknown Los Angeles PST time';
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return 'Unknown Los Angeles PST time';
+      return d.toLocaleString([], {
+        timeZone: 'America/Los_Angeles',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }) + ' PST';
+    }
+
+    function severityRank(severity) {
+      return { critical: 4, high: 3, medium: 2, low: 1 }[String(severity).toLowerCase()] || 0;
+    }
+
+    function normalizeArray(value) {
+      if (Array.isArray(value)) return value.filter(Boolean);
+      if (typeof value === 'string' && value.trim()) return [value.trim()];
       return [];
     }
 
-    const decoded = Buffer.from(
-      String(githubContent).replace(/\n/g, ''),
-      'base64'
-    ).toString('utf8');
-
-    const parsed = JSON.parse(decoded);
-
-    if (!Array.isArray(parsed.alerts)) {
-      return [];
+    function normalizedAlert(alert) {
+      return {
+        id: alert.id || btoa(String(alert.url || alert.title || Math.random())).replace(/=+$/,'').slice(0, 24),
+        source: alert.source || 'BleepingComputer',
+        sourceType: alert.sourceType || 'RSS',
+        title: alert.title || 'Untitled alert',
+        summary: alert.summary || '',
+        url: alert.url || '#',
+        publishedAt: alert.publishedAt || alert.pubDate || alert.isoDate || null,
+        severity: String(alert.severity || 'low').toLowerCase(),
+        tags: normalizeArray(alert.tags),
+        category: alert.category || 'Cybersecurity News',
+        recommendedAction: alert.recommendedAction || 'Review the source article and determine applicability to the environment.',
+        businessImpact: alert.businessImpact || 'Validate applicability before assigning business impact.',
+        affectedTechnology: normalizeArray(alert.affectedTechnology),
+        threatType: normalizeArray(alert.threatType),
+        reviewStatus: alert.reviewStatus || 'unreviewed',
+        priorityScore: Number(alert.priorityScore || 0),
+        remediation: alert.remediation || '',
+        remediationShort: alert.remediationShort || '',
+        remediationSource: alert.remediationSource || 'Generated from alert text',
+        remediationSourceUrl: alert.remediationSourceUrl || alert.url || '',
+        remediationConfidence: alert.remediationConfidence || 'low',
+        requiresVendorValidation: alert.requiresVendorValidation !== false,
+        dedupeKey: alert.dedupeKey || alert.url || alert.title || ''
+      };
     }
 
-    return parsed.alerts;
-  } catch (error) {
-    return [];
-  }
-}
-
-function normalizeArray(value) {
-  if (Array.isArray(value)) {
-    return value.filter(Boolean);
-  }
-
-  if (typeof value === 'string' && value.trim()) {
-    return [value.trim()];
-  }
-
-  return [];
-}
-
-function normalizeBoolean(value, fallback = true) {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-
-  if (typeof value === 'string') {
-    const normalized = value.toLowerCase().trim();
-
-    if (normalized === 'true') return true;
-    if (normalized === 'false') return false;
-  }
-
-  return fallback;
-}
-
-function normalizeRemediationConfidence(value) {
-  const confidence = String(value || 'low').toLowerCase();
-
-  if (['high', 'medium', 'low'].includes(confidence)) {
-    return confidence;
-  }
-
-  return 'low';
-}
-
-function normalizeAlert(alert) {
-  const publishedAt = safeDate(alert.publishedAt || alert.pubDate || alert.isoDate);
-
-  const title = String(alert.title || 'Untitled alert').trim();
-  const url = alert.url || alert.link || '';
-
-  const dedupeKey = String(
-    alert.dedupeKey ||
-    url ||
-    alert.guid ||
-    title
-  );
-
-  const id = alert.id ||
-    Buffer.from(dedupeKey || `${title}-${publishedAt.toISOString()}`)
-      .toString('base64url')
-      .slice(0, 24);
-
-  return {
-    id,
-    source: alert.source || 'BleepingComputer',
-    sourceType: alert.sourceType || 'RSS',
-    title,
-    summary: String(alert.summary || '').trim(),
-    url,
-    publishedAt: publishedAt.toISOString(),
-    severity: normalizeSeverity(alert.severity),
-    tags: normalizeArray(alert.tags),
-    category: alert.category || 'Cybersecurity News',
-    recommendedAction: alert.recommendedAction || 'Review for applicability.',
-    businessImpact: alert.businessImpact || '',
-    affectedTechnology: normalizeArray(alert.affectedTechnology),
-    threatType: normalizeArray(alert.threatType),
-    priorityScore: Number(alert.priorityScore || 0),
-    reviewStatus: alert.reviewStatus || 'unreviewed',
-
-    remediation: alert.remediation || '',
-    remediationShort: alert.remediationShort || '',
-    remediationSource: alert.remediationSource || 'Generated from alert text',
-    remediationSourceUrl: alert.remediationSourceUrl || alert.url || alert.link || '',
-    remediationConfidence: normalizeRemediationConfidence(alert.remediationConfidence),
-    requiresVendorValidation: normalizeBoolean(alert.requiresVendorValidation, true),
-
-    dedupeKey
-  };
-}
-
-// New alerts from the Code in JavaScript node.
-// This node is not the direct input anymore because GitHub Get Alerts JSON is now between them.
-const newAlerts = $('Code in JavaScript')
-  .all()
-  .map(item => normalizeAlert(item.json));
-
-// Existing alerts from the current alerts.json file in GitHub.
-const existingAlerts = decodeExistingAlertsFromGitHub()
-  .map(alert => normalizeAlert(alert));
-
-// Merge current RSS alerts with the existing 7-day history.
-const mergedAlerts = [
-  ...newAlerts,
-  ...existingAlerts
-];
-
-// Deduplicate by dedupeKey, URL, or title.
-const deduped = new Map();
-
-for (const alert of mergedAlerts) {
-  const key = alert.dedupeKey || alert.url || alert.title;
-
-  if (!key) {
-    continue;
-  }
-
-  const existing = deduped.get(key);
-
-  if (!existing) {
-    deduped.set(key, alert);
-    continue;
-  }
-
-  // Keep the richer version of the same alert.
-  const existingQuality =
-    (existing.summary ? 10 : 0) +
-    (existing.recommendedAction ? 10 : 0) +
-    (existing.businessImpact ? 10 : 0) +
-    (existing.remediation ? 20 : 0) +
-    (existing.remediationShort ? 10 : 0) +
-    (existing.remediationSourceUrl ? 5 : 0) +
-    (existing.tags?.length || 0) +
-    (existing.affectedTechnology?.length || 0) +
-    (existing.threatType?.length || 0) +
-    Number(existing.priorityScore || 0);
-
-  const newQuality =
-    (alert.summary ? 10 : 0) +
-    (alert.recommendedAction ? 10 : 0) +
-    (alert.businessImpact ? 10 : 0) +
-    (alert.remediation ? 20 : 0) +
-    (alert.remediationShort ? 10 : 0) +
-    (alert.remediationSourceUrl ? 5 : 0) +
-    (alert.tags?.length || 0) +
-    (alert.affectedTechnology?.length || 0) +
-    (alert.threatType?.length || 0) +
-    Number(alert.priorityScore || 0);
-
-  if (newQuality > existingQuality) {
-    deduped.set(key, alert);
-  } else if (newQuality === existingQuality) {
-    // Tie: prefer whichever has the more recent publishedAt.
-    if (safeDate(alert.publishedAt) > safeDate(existing.publishedAt)) {
-      deduped.set(key, alert);
+    function updateClock() {
+      els.clock.textContent = 'Los Angeles PST ' + new Date().toLocaleTimeString([], {
+        timeZone: 'America/Los_Angeles',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
     }
-  }
-}
 
-// Keep only alerts from the last 7 days.
-const alerts = Array.from(deduped.values())
-  .filter(alert => safeDate(alert.publishedAt) >= cutoff)
-  .sort((a, b) => {
-    const severityDiff = severityRank(b.severity) - severityRank(a.severity);
-    if (severityDiff !== 0) return severityDiff;
-
-    const priorityDiff = Number(b.priorityScore || 0) - Number(a.priorityScore || 0);
-    if (priorityDiff !== 0) return priorityDiff;
-
-    return safeDate(b.publishedAt) - safeDate(a.publishedAt);
-  });
-
-const counts = alerts.reduce(
-  (acc, alert) => {
-    const severity = normalizeSeverity(alert.severity);
-    acc[severity] += 1;
-    acc.total += 1;
-    return acc;
-  },
-  {
-    critical: 0,
-    high: 0,
-    medium: 0,
-    low: 0,
-    total: 0
-  }
-);
-
-const topTags = Object.entries(
-  alerts.reduce((acc, alert) => {
-    for (const tag of alert.tags || []) {
-      acc[tag] = (acc[tag] || 0) + 1;
+    function toast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add('show');
+      setTimeout(() => els.toast.classList.remove('show'), 2500);
     }
-    return acc;
-  }, {})
-)
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, 10)
-  .map(([tag]) => tag);
 
-const remediationStats = alerts.reduce(
-  (acc, alert) => {
-    const confidence = normalizeRemediationConfidence(alert.remediationConfidence);
+    async function loadData() {
+      els.dataHealth.textContent = 'Loading data';
+      try {
+        const response = await fetch(`./alerts.json?v=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const alerts = Array.isArray(data.alerts) ? data.alerts.map(normalizedAlert) : [];
 
-    acc.totalWithRemediation += alert.remediation || alert.remediationShort ? 1 : 0;
-    acc.vendorValidationRequired += alert.requiresVendorValidation ? 1 : 0;
-    acc.confidence[confidence] += 1;
+        state.data = data;
+        state.alerts = alerts.sort((a, b) => {
+          const rank = severityRank(b.severity) - severityRank(a.severity);
+          if (rank !== 0) return rank;
+          const score = (b.priorityScore || 0) - (a.priorityScore || 0);
+          if (score !== 0) return score;
+          return new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0);
+        });
 
-    return acc;
-  },
-  {
-    totalWithRemediation: 0,
-    vendorValidationRequired: 0,
-    confidence: {
-      high: 0,
-      medium: 0,
-      low: 0
+        els.dataHealth.textContent = alerts.length ? `${alerts.length} alerts loaded` : 'No alerts loaded';
+        render();
+      } catch (error) {
+        els.dataHealth.textContent = 'Data load failed';
+        els.alertList.innerHTML = `<div class="empty">Unable to load alerts.json. Confirm the file exists in the repository root and that n8n has updated it.<br><br>${escapeHtml(error.message)}</div>`;
+      }
     }
-  }
-);
 
-const topAlert = alerts[0] || null;
-
-const dashboard = {
-  generatedAt: now.toISOString(),
-  source: 'BleepingComputer',
-  sourceUrl: 'https://www.bleepingcomputer.com/rss-feeds/',
-  windowDays,
-  counts,
-  summary: {
-    immediateReviewCount: alerts.filter(alert =>
-      ['critical', 'high'].includes(alert.severity) ||
-      Number(alert.priorityScore || 0) >= 70
-    ).length,
-    highestPriorityScore: alerts.reduce(
-      (max, alert) => Math.max(max, Number(alert.priorityScore || 0)),
-      0
-    ),
-    topTags,
-    remediationStats
-  },
-  topAlert,
-  alerts
-};
-
-const dashboardJson = JSON.stringify(dashboard, null, 2);
-
-return [
-  {
-    json: {
-      dashboard,
-      dashboardJson,
-      dashboardBase64: Buffer.from(dashboardJson, 'utf8').toString('base64'),
-
-      // Required by GitHub Update Alerts JSON PUT body.
-      githubSha,
-
-      alertCount: counts.total,
-      criticalCount: counts.critical,
-      highCount: counts.high,
-      mediumCount: counts.medium,
-      lowCount: counts.low,
-      remediationCount: remediationStats.totalWithRemediation,
-      vendorValidationRequiredCount: remediationStats.vendorValidationRequired,
-      shouldEmail: counts.critical > 0 || counts.high > 0
+    function countBySeverity(alerts) {
+      return alerts.reduce((acc, alert) => {
+        const sev = alert.severity || 'low';
+        acc[sev] = (acc[sev] || 0) + 1;
+        acc.total += 1;
+        return acc;
+      }, { critical: 0, high: 0, medium: 0, low: 0, total: 0 });
     }
-  }
-];
+
+    function filteredAlerts() {
+      const q = state.search.trim().toLowerCase();
+      return state.alerts.filter(alert => {
+        if (state.filter !== 'all' && alert.severity !== state.filter) return false;
+        if (!q) return true;
+
+        const haystack = [
+          alert.title,
+          alert.summary,
+          alert.recommendedAction,
+          alert.businessImpact,
+          alert.remediation,
+          alert.remediationShort,
+          alert.remediationSource,
+          alert.remediationConfidence,
+          ...(alert.tags || []),
+          ...(alert.affectedTechnology || []),
+          ...(alert.threatType || [])
+        ].join(' ').toLowerCase();
+
+        return haystack.includes(q);
+      });
+    }
+
+    function renderMetrics() {
+      const counts = state.data?.counts || countBySeverity(state.alerts);
+      els.criticalCount.textContent = counts.critical || 0;
+      els.highCount.textContent = counts.high || 0;
+      els.mediumCount.textContent = counts.medium || 0;
+      els.lowCount.textContent = counts.low || 0;
+      els.totalCount.textContent = counts.total ?? state.alerts.length;
+
+      const generated = state.data?.generatedAt ? formatDate(state.data.generatedAt) : 'Unknown';
+      const source = state.data?.source || 'BleepingComputer';
+      els.updated.textContent = `Updated: ${generated} | Source: ${source}`;
+    }
+
+    function renderReviewList() {
+      const review = state.alerts
+        .filter(alert => ['critical', 'high'].includes(alert.severity) || Number(alert.priorityScore || 0) >= 70)
+        .slice(0, 5);
+
+      if (!review.length) {
+        els.reviewList.innerHTML = '<div class="empty">No urgent alerts are currently loaded.</div>';
+        return;
+      }
+
+      els.reviewList.innerHTML = review.map(alert => `
+        <article class="review-item">
+          <div class="alert-top">
+            <div>
+              <div class="review-item-title">${escapeHtml(alert.title)}</div>
+              <div class="meta"><span>${formatDate(alert.publishedAt)}</span><span>Priority ${alert.priorityScore || 0}/100</span><span>${escapeHtml(alert.source)}</span></div>
+            </div>
+            <span class="severity ${alert.severity}">${escapeHtml(alert.severity)}</span>
+          </div>
+          <p class="summary">${escapeHtml(alert.remediationShort || alert.recommendedAction)}</p>
+          <div class="alert-actions">
+            <button class="mini-btn" data-jump="${escapeHtml(alert.id)}">Open in Feed</button>
+            <a class="mini-btn" href="${escapeHtml(alert.url)}" target="_blank" rel="noopener noreferrer">Source</a>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function renderAlerts() {
+      const filtered = filteredAlerts();
+      const shown = state.limit === 'all' ? filtered : filtered.slice(0, Number(state.limit));
+      els.visibleCount.textContent = shown.length;
+
+      if (!shown.length) {
+        els.alertList.innerHTML = '<div class="empty">No alerts match the current filters. Select Total or clear the search box.</div>';
+        return;
+      }
+
+      els.alertList.innerHTML = shown.map(alert => {
+        const tags = [...(alert.tags || []), ...(alert.affectedTechnology || []), ...(alert.threatType || [])]
+          .filter(Boolean)
+          .slice(0, 10);
+
+        const sourceLink = alert.remediationSourceUrl
+          ? ` · <a href="${escapeHtml(alert.remediationSourceUrl)}" target="_blank" rel="noopener noreferrer">Source review</a>`
+          : '';
+
+        return `
+          <article class="alert" id="alert-${escapeHtml(alert.id)}">
+            <div class="alert-top">
+              <div>
+                <h2 class="alert-title"><a href="${escapeHtml(alert.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(alert.title)}</a></h2>
+                <div class="meta"><span>${formatDate(alert.publishedAt)}</span><span>${escapeHtml(alert.source)}</span><span>Priority ${alert.priorityScore || 0}/100</span></div>
+              </div>
+              <span class="severity ${alert.severity}">${escapeHtml(alert.severity)}</span>
+            </div>
+
+            <p class="summary">${escapeHtml(alert.summary)}</p>
+            <div class="chips">${tags.map(tag => `<span class="chip">${escapeHtml(tag)}</span>`).join('')}</div>
+
+            <div class="alert-actions">
+              <button class="mini-btn" data-details="${escapeHtml(alert.id)}">Details</button>
+              <a class="mini-btn" href="${escapeHtml(alert.url)}" target="_blank" rel="noopener noreferrer">Source</a>
+              <button class="mini-btn" data-copy="${escapeHtml(alert.id)}">Copy Notes</button>
+            </div>
+
+            <div class="details" id="details-${escapeHtml(alert.id)}">
+              <div class="details-grid">
+                <div class="detail-box"><div class="detail-label">Recommended action</div>${escapeHtml(alert.recommendedAction)}</div>
+                <div class="detail-box"><div class="detail-label">Business impact</div>${escapeHtml(alert.businessImpact)}</div>
+                <div class="detail-box full">
+                  <div class="detail-label">Remediation</div>
+                  <pre class="remediation-text">${escapeHtml(alert.remediation || alert.remediationShort || 'No remediation guidance generated.')}</pre>
+                </div>
+                <div class="detail-box"><div class="detail-label">Remediation source</div>${escapeHtml(alert.remediationSource)}${sourceLink}</div>
+                <div class="detail-box"><div class="detail-label">Confidence</div>${escapeHtml(alert.remediationConfidence)}${alert.requiresVendorValidation ? ' · Vendor validation required' : ''}</div>
+                <div class="detail-box"><div class="detail-label">Affected technology</div>${escapeHtml((alert.affectedTechnology || []).join(', ') || 'Not identified')}</div>
+                <div class="detail-box"><div class="detail-label">Threat type</div>${escapeHtml((alert.threatType || []).join(', ') || 'Not identified')}</div>
+                <div class="detail-box"><div class="detail-label">Review status</div>${escapeHtml(alert.reviewStatus)}</div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function render() {
+      renderMetrics();
+      renderReviewList();
+      renderAlerts();
+    }
+
+    function buildNote(alert) {
+      return `Cybersecurity Alert Triage
+
+Title: ${alert.title}
+Severity: ${alert.severity.toUpperCase()}
+Priority Score: ${alert.priorityScore || 0}/100
+Published: ${alert.publishedAt || 'Unknown'}
+Source: ${alert.url}
+
+Summary:
+${alert.summary}
+
+Recommended Action:
+${alert.recommendedAction}
+
+Remediation:
+${alert.remediation || alert.remediationShort || 'No remediation guidance generated.'}
+
+Remediation Source:
+${alert.remediationSource || 'Generated from alert text'}
+${alert.remediationSourceUrl ? `Source Review URL: ${alert.remediationSourceUrl}` : ''}
+Confidence: ${alert.remediationConfidence || 'low'}
+Requires Vendor Validation: ${alert.requiresVendorValidation ? 'Yes' : 'No'}
+
+Business Impact:
+${alert.businessImpact}
+
+Tags: ${(alert.tags || []).join(', ') || 'None'}
+Affected Technology: ${(alert.affectedTechnology || []).join(', ') || 'Not identified'}
+Threat Type: ${(alert.threatType || []).join(', ') || 'Not identified'}
+`;
+    }
+
+    function buildBriefing() {
+      const counts = state.data?.counts || countBySeverity(state.alerts);
+      const top = state.alerts.slice(0, 5).map((a, i) => `${i + 1}. [${a.severity.toUpperCase()} | ${a.priorityScore || 0}/100] ${a.title}\n   Action: ${a.recommendedAction}\n   Remediation: ${a.remediationShort || 'Review alert details.'}\n   Source: ${a.url}`).join('\n\n');
+
+      return `Cybersecurity Alert Briefing
+Generated: ${state.data?.generatedAt || new Date().toISOString()}
+Window: ${state.data?.windowDays || 7} days
+
+Critical: ${counts.critical || 0}
+High: ${counts.high || 0}
+Medium: ${counts.medium || 0}
+Low: ${counts.low || 0}
+Total: ${counts.total ?? state.alerts.length}
+
+Top Alerts:
+${top || 'No alerts available.'}`;
+    }
+
+    async function copyText(text, message) {
+      await navigator.clipboard.writeText(text);
+      toast(message);
+    }
+
+    document.addEventListener('click', async event => {
+      const metric = event.target.closest('[data-severity-card]');
+      if (metric) {
+        state.filter = metric.dataset.severityCard;
+        els.severityFilter.value = state.filter;
+        document.querySelectorAll('[data-severity-card]').forEach(card => card.classList.toggle('active', card === metric));
+        renderAlerts();
+        document.querySelector('.panel:last-of-type')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+
+      const detailsBtn = event.target.closest('[data-details]');
+      if (detailsBtn) {
+        const details = document.getElementById(`details-${detailsBtn.dataset.details}`);
+        if (details) details.classList.toggle('open');
+        return;
+      }
+
+      const copyBtn = event.target.closest('[data-copy]');
+      if (copyBtn) {
+        const alert = state.alerts.find(a => a.id === copyBtn.dataset.copy);
+        if (alert) await copyText(buildNote(alert), 'Triage notes copied.');
+        return;
+      }
+
+      const jumpBtn = event.target.closest('[data-jump]');
+      if (jumpBtn) {
+        state.filter = 'all';
+        els.severityFilter.value = 'all';
+        renderAlerts();
+        const item = document.getElementById(`alert-${jumpBtn.dataset.jump}`);
+        if (item) item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      const command = event.target.closest('[data-command]');
+      if (command) {
+        const action = command.dataset.command;
+        if (action === 'refresh') loadData();
+        if (action === 'briefing') await copyText(buildBriefing(), 'Briefing copied.');
+        if (action === 'json') window.open('./alerts.json', '_blank', 'noopener,noreferrer');
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('[data-severity-card]')) {
+        event.preventDefault();
+        event.target.click();
+      }
+    });
+
+    els.search.addEventListener('input', event => {
+      state.search = event.target.value;
+      renderAlerts();
+    });
+
+    els.severityFilter.addEventListener('change', event => {
+      state.filter = event.target.value;
+      document.querySelectorAll('[data-severity-card]').forEach(card => card.classList.toggle('active', card.dataset.severityCard === state.filter));
+      renderAlerts();
+    });
+
+    els.limit.addEventListener('change', event => {
+      state.limit = event.target.value;
+      renderAlerts();
+    });
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    loadData();
+  </script>
+</body>
+</html>
