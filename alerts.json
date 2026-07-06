@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T22:07:57.807Z",
+  "generatedAt": "2026-07-06T01:26:47.989Z",
   "source": "BleepingComputer",
   "sourceUrl": "https://www.bleepingcomputer.com/rss-feeds/",
   "windowDays": 7,
@@ -10,6 +10,22 @@
     "low": 0,
     "total": 8
   },
+  "summary": {
+    "immediateReviewCount": 5,
+    "highestPriorityScore": 0,
+    "topTags": [
+      "Microsoft",
+      "Ransomware",
+      "SharePoint",
+      "CISA",
+      "RCE",
+      "Cisco",
+      "Data Breach",
+      "Fortinet",
+      "Credential Theft",
+      "Phishing"
+    ]
+  },
   "topAlert": {
     "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
     "source": "BleepingComputer",
@@ -19,9 +35,19 @@
     "url": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/",
     "publishedAt": "2026-07-02T10:52:43.000Z",
     "severity": "critical",
-    "tags": ["Microsoft", "SharePoint", "CISA", "RCE"],
+    "tags": [
+      "Microsoft",
+      "SharePoint",
+      "CISA",
+      "RCE"
+    ],
     "category": "Cybersecurity News",
     "recommendedAction": "Review immediately. Check exposure, vendor advisories, patch status, SIEM/EDR alerts, and known indicators of compromise.",
+    "businessImpact": "",
+    "affectedTechnology": [],
+    "threatType": [],
+    "priorityScore": 0,
+    "reviewStatus": "unreviewed",
     "dedupeKey": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/"
   },
   "alerts": [
@@ -34,10 +60,171 @@
       "url": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/",
       "publishedAt": "2026-07-02T10:52:43.000Z",
       "severity": "critical",
-      "tags": ["Microsoft", "SharePoint", "CISA", "RCE"],
+      "tags": [
+        "Microsoft",
+        "SharePoint",
+        "CISA",
+        "RCE"
+      ],
       "category": "Cybersecurity News",
       "recommendedAction": "Review immediately. Check exposure, vendor advisories, patch status, SIEM/EDR alerts, and known indicators of compromise.",
+      "businessImpact": "",
+      "affectedTechnology": [],
+      "threatType": [],
+      "priorityScore": 0,
+      "reviewStatus": "unreviewed",
       "dedupeKey": "https://www.bleepingcomputer.com/news/security/cisa-microsoft-sharepoint-rce-flaw-now-actively-exploited/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "JadePuffer ransomware used AI agent to automate entire attack",
+      "summary": "Researchers identified what they believe is the first documented case of a ransomware operation, JadePuffer, conducted entirely by a large language model (LLM) agent. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/jadepuffer-ransomware-used-ai-agent-to-automate-entire-attack/",
+      "publishedAt": "2026-07-04T14:16:38.000Z",
+      "severity": "high",
+      "tags": [
+        "Ransomware"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review today. Validate whether affected products, services, vendors, or externally exposed systems exist in the environment.",
+      "businessImpact": "",
+      "affectedTechnology": [],
+      "threatType": [],
+      "priorityScore": 0,
+      "reviewStatus": "unreviewed",
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/jadepuffer-ransomware-used-ai-agent-to-automate-entire-attack/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "Cisco finally confirms attackers exploiting Unified CM flaw",
+      "summary": "Cisco confirmed that attackers are now exploiting a Unified Communications Manager (Unified CM) vulnerability patched in early June. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/cisco-finally-confirms-attackers-exploiting-unified-cm-flaw/",
+      "publishedAt": "2026-07-02T11:35:25.000Z",
+      "severity": "high",
+      "tags": [
+        "Cisco"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review today. Validate whether affected products, services, vendors, or externally exposed systems exist in the environment.",
+      "businessImpact": "",
+      "affectedTechnology": [],
+      "threatType": [],
+      "priorityScore": 0,
+      "reviewStatus": "unreviewed",
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/cisco-finally-confirms-attackers-exploiting-unified-cm-flaw/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "Medtronic notifies customers impacted by ShinyHunters data breach",
+      "summary": "Healthcare device firm Medtronic is notifying affected customers about a data breach that exposed their personal data to an unauthorized third party. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/medtronic-notifies-customers-impacted-by-shinyhunters-data-breach/",
+      "publishedAt": "2026-07-02T04:25:42.000Z",
+      "severity": "high",
+      "tags": [
+        "Data Breach"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review today. Validate whether affected products, services, vendors, or externally exposed systems exist in the environment.",
+      "businessImpact": "",
+      "affectedTechnology": [],
+      "threatType": [],
+      "priorityScore": 0,
+      "reviewStatus": "unreviewed",
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/medtronic-notifies-customers-impacted-by-shinyhunters-data-breach/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "FortiBleed credential-theft campaign linked to Lynx ransomware",
+      "summary": "The massive FortiBleed credential theft campaign has been linked to the INC and Lynx ransomware operations, suggesting the stolen Fortinet credentials were intended to fuel future network intrusions. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/fortibleed-credential-theft-campaign-linked-to-lynx-ransomware/",
+      "publishedAt": "2026-07-01T21:37:24.000Z",
+      "severity": "high",
+      "tags": [
+        "Ransomware",
+        "Fortinet",
+        "Credential Theft"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review today. Validate whether affected products, services, vendors, or externally exposed systems exist in the environment.",
+      "businessImpact": "",
+      "affectedTechnology": [],
+      "threatType": [],
+      "priorityScore": 0,
+      "reviewStatus": "unreviewed",
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/fortibleed-credential-theft-campaign-linked-to-lynx-ransomware/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "ARToken PhaaS exposes EvilTokens' Microsoft 365 phishing toolkit",
+      "summary": "A new phishing-as-a-service (PhaaS) platform dubbed \"ARToken\" appears to operate as an affiliate of the EvilTokens phishing platform, giving researchers a glimpse into an extensive toolkit designed to compromise Microsoft 365. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/artoken-phaas-exposes-eviltokens-microsoft-365-phishing-toolkit/",
+      "publishedAt": "2026-07-03T14:12:22.000Z",
+      "severity": "medium",
+      "tags": [
+        "Microsoft",
+        "Phishing"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review Microsoft patch applicability and confirm endpoint and server update status.",
+      "businessImpact": "",
+      "affectedTechnology": [],
+      "threatType": [],
+      "priorityScore": 0,
+      "reviewStatus": "unreviewed",
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/artoken-phaas-exposes-eviltokens-microsoft-365-phishing-toolkit/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "ConsentFix and ClickFix: How Microsoft 365 Accounts are Hijacked in 3 Seconds",
+      "summary": "ConsentFix and ClickFix attacks steal Microsoft 365 tokens in seconds using fake prompts and OAuth flows. Learn how these MFA bypass tactics work and how to defend against them. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/consentfix-and-clickfix-how-microsoft-365-accounts-are-hijacked-in-3-seconds/",
+      "publishedAt": "2026-07-02T14:00:10.000Z",
+      "severity": "medium",
+      "tags": [
+        "Microsoft"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review Microsoft patch applicability and confirm endpoint and server update status.",
+      "businessImpact": "",
+      "affectedTechnology": [],
+      "threatType": [],
+      "priorityScore": 0,
+      "reviewStatus": "unreviewed",
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/consentfix-and-clickfix-how-microsoft-365-accounts-are-hijacked-in-3-seconds/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "Microsoft fixes bug that removed Copilot buttons in Outlook",
+      "summary": "Microsoft has fixed a known issue causing the Copilot Chat or Copilot buttons in Classic Outlook to disappear for Windows users with the Copilot Chat (Basic) license. [...]",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-bug-that-removed-copilot-button-in-outlook/",
+      "publishedAt": "2026-07-02T12:15:47.000Z",
+      "severity": "medium",
+      "tags": [
+        "Microsoft",
+        "Windows"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review Microsoft patch applicability and confirm endpoint and server update status.",
+      "businessImpact": "",
+      "affectedTechnology": [],
+      "threatType": [],
+      "priorityScore": 0,
+      "reviewStatus": "unreviewed",
+      "dedupeKey": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-bug-that-removed-copilot-button-in-outlook/"
     }
   ]
 }
