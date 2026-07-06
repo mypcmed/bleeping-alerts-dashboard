@@ -111,6 +111,23 @@
     .metric.high .value { color: var(--high); }
     .metric.medium .value { color: var(--medium); }
     .metric.low .value { color: var(--low); }
+    .metric { cursor: pointer; transition: transform .12s ease, border-color .12s ease, background .12s ease; }
+    .metric:hover { transform: translateY(-2px); border-color: rgba(34, 211, 238, .52); background: rgba(16, 35, 58, .88); }
+    .metric.active-card { border-color: rgba(34, 211, 238, .78); box-shadow: 0 0 0 1px rgba(34, 211, 238, .18), var(--shadow); }
+
+    .drilldown-section { margin: -2px 0 16px; }
+    .drilldown-section.hidden { display: none; }
+    .drill-list { display: grid; gap: 9px; }
+    .drill-item { border: 1px solid var(--line); background: rgba(16, 35, 58, .54); border-radius: var(--radius-sm); padding: 11px 12px; }
+    .drill-main { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: start; }
+    .drill-title { font-weight: 900; line-height: 1.25; }
+    .drill-title a { text-decoration: none; }
+    .drill-title a:hover { color: var(--cyan); }
+    .drill-meta { color: var(--muted); font-size: 12px; margin-top: 5px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .drill-summary { color: #c7d5e5; font-size: 13px; line-height: 1.4; margin: 9px 0 0; }
+    .drill-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .drill-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); color: #cbd8e8; font-size: 13px; line-height: 1.45; }
+    .drill-details.open { display: block; }
 
     .layout { display: grid; grid-template-columns: 390px minmax(0, 1fr); gap: 16px; align-items: start; }
     .panel {
@@ -233,7 +250,7 @@
         <p class="subtitle">Prioritized cybersecurity alert visibility from BleepingComputer RSS. Built for quick triage, source validation, escalation, and daily review.</p>
       </div>
       <aside class="status-card">
-        <div class="eyebrow">Local Time</div>
+        <div class="eyebrow">UTC Time</div>
         <div id="clock" class="clock">--:--:--</div>
         <div id="updated" class="status-line">Waiting for alerts.json...</div>
         <div class="health">
@@ -244,11 +261,24 @@
     </section>
 
     <section class="grid metrics">
-      <div class="metric critical"><div class="label">Critical</div><div id="criticalCount" class="value">0</div><div class="hint">Immediate review</div></div>
-      <div class="metric high"><div class="label">High</div><div id="highCount" class="value">0</div><div class="hint">Review today</div></div>
-      <div class="metric medium"><div class="label">Medium</div><div id="mediumCount" class="value">0</div><div class="hint">Planned review</div></div>
-      <div class="metric low"><div class="label">Low</div><div id="lowCount" class="value">0</div><div class="hint">Awareness</div></div>
-      <div class="metric"><div class="label">Total</div><div id="totalCount" class="value">0</div><div class="hint"><span id="visibleCount">0</span> visible</div></div>
+      <div class="metric critical" data-severity-card="critical" role="button" tabindex="0"><div class="label">Critical</div><div id="criticalCount" class="value">0</div><div class="hint">Click to view alerts</div></div>
+      <div class="metric high" data-severity-card="high" role="button" tabindex="0"><div class="label">High</div><div id="highCount" class="value">0</div><div class="hint">Click to view alerts</div></div>
+      <div class="metric medium" data-severity-card="medium" role="button" tabindex="0"><div class="label">Medium</div><div id="mediumCount" class="value">0</div><div class="hint">Click to view alerts</div></div>
+      <div class="metric low" data-severity-card="low" role="button" tabindex="0"><div class="label">Low</div><div id="lowCount" class="value">0</div><div class="hint">Click to view alerts</div></div>
+      <div class="metric" data-severity-card="all" role="button" tabindex="0"><div class="label">Total</div><div id="totalCount" class="value">0</div><div class="hint"><span id="visibleCount">0</span> visible</div></div>
+    </section>
+
+    <section id="severityDrilldown" class="panel drilldown-section hidden" aria-live="polite">
+      <div class="panel-head">
+        <div>
+          <div id="drillTitle" class="panel-title">Selected Severity Alerts</div>
+          <div id="drillSubtitle" class="panel-subtitle">Click a severity card to populate this section.</div>
+        </div>
+        <button class="btn" data-command="close-drilldown">Close</button>
+      </div>
+      <div class="panel-body">
+        <div id="drillList" class="drill-list"></div>
+      </div>
     </section>
 
     <section class="command-row">
@@ -317,7 +347,8 @@
       filter: 'all',
       tag: null,
       search: '',
-      limit: '12'
+      limit: '12',
+      drilldown: null
     };
 
     const els = {
@@ -337,7 +368,11 @@
       search: document.getElementById('search'),
       severityFilter: document.getElementById('severityFilter'),
       limit: document.getElementById('limit'),
-      toast: document.getElementById('toast')
+      toast: document.getElementById('toast'),
+      severityDrilldown: document.getElementById('severityDrilldown'),
+      drillTitle: document.getElementById('drillTitle'),
+      drillSubtitle: document.getElementById('drillSubtitle'),
+      drillList: document.getElementById('drillList')
     };
 
     function escapeHtml(value) {
@@ -345,10 +380,17 @@
     }
 
     function formatDate(value) {
-      if (!value) return 'Unknown time';
+      if (!value) return 'Unknown UTC time';
       const d = new Date(value);
-      if (Number.isNaN(d.getTime())) return 'Unknown time';
-      return d.toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+      if (Number.isNaN(d.getTime())) return 'Unknown UTC time';
+      return d.toLocaleString([], {
+        timeZone: 'UTC',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }) + ' UTC';
     }
 
     function severityRank(severity) {
@@ -378,7 +420,13 @@
     }
 
     function updateClock() {
-      els.clock.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      els.clock.textContent = new Date().toLocaleTimeString([], {
+        timeZone: 'UTC',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }) + ' UTC';
     }
 
     function toast(message) {
@@ -481,6 +529,60 @@
       `).join('') : '<div class="empty">No tags available.</div>';
     }
 
+    function renderSeverityDrilldown() {
+      if (!state.drilldown) {
+        els.severityDrilldown.classList.add('hidden');
+        els.drillList.innerHTML = '';
+        document.querySelectorAll('[data-severity-card]').forEach(card => card.classList.remove('active-card'));
+        return;
+      }
+
+      const selected = state.drilldown;
+      document.querySelectorAll('[data-severity-card]').forEach(card => {
+        card.classList.toggle('active-card', card.dataset.severityCard === selected);
+      });
+
+      const alerts = selected === 'all'
+        ? state.alerts
+        : state.alerts.filter(alert => alert.severity === selected);
+
+      const label = selected === 'all' ? 'All' : selected.charAt(0).toUpperCase() + selected.slice(1);
+      els.drillTitle.textContent = `${label} Alerts`;
+      els.drillSubtitle.textContent = `${alerts.length} alert${alerts.length === 1 ? '' : 's'} currently loaded from the 7-day feed.`;
+      els.severityDrilldown.classList.remove('hidden');
+
+      if (!alerts.length) {
+        els.drillList.innerHTML = `<div class="empty">No ${escapeHtml(label.toLowerCase())} alerts are available in the current alerts.json feed.</div>`;
+        return;
+      }
+
+      els.drillList.innerHTML = alerts.map(alert => `
+        <div class="drill-item" id="drill-${escapeHtml(alert.id)}">
+          <div class="drill-main">
+            <span class="severity ${alert.severity}">${escapeHtml(alert.severity)}</span>
+            <div>
+              <div class="drill-title"><a href="${escapeHtml(alert.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(alert.title)}</a></div>
+              <div class="drill-meta"><span>${formatDate(alert.publishedAt)}</span><span>${escapeHtml(alert.source)}</span><span class="score">Priority ${alert.priorityScore || 0}/100</span></div>
+              <div class="drill-summary">${escapeHtml(alert.summary)}</div>
+            </div>
+            <div class="drill-actions">
+              <button class="mini-btn" data-drill-details="${escapeHtml(alert.id)}">Details</button>
+              <a class="mini-btn" href="${escapeHtml(alert.url)}" target="_blank" rel="noopener noreferrer">Source</a>
+              <button class="mini-btn" data-copy="${escapeHtml(alert.id)}">Copy Notes</button>
+            </div>
+          </div>
+          <div class="drill-details" id="drill-details-${escapeHtml(alert.id)}">
+            <div class="details-grid">
+              <div class="detail-box"><div class="detail-label">Recommended action</div>${escapeHtml(alert.recommendedAction)}</div>
+              <div class="detail-box"><div class="detail-label">Business impact</div>${escapeHtml(alert.businessImpact)}</div>
+              <div class="detail-box"><div class="detail-label">Tags</div>${escapeHtml((alert.tags || []).join(', ') || 'None')}</div>
+              <div class="detail-box"><div class="detail-label">Affected technology</div>${escapeHtml((alert.affectedTechnology || []).join(', ') || 'Not identified')}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
     function renderAlerts() {
       const filtered = filterAlerts();
       const shown = state.limit === 'all' ? filtered : filtered.slice(0, Number(state.limit));
@@ -527,6 +629,7 @@
       renderMetrics();
       renderFocus();
       renderTags();
+      renderSeverityDrilldown();
       renderAlerts();
     }
 
@@ -546,11 +649,26 @@
     }
 
     document.addEventListener('click', async event => {
+      const severityCard = event.target.closest('[data-severity-card]');
+      if (severityCard) {
+        const severity = severityCard.dataset.severityCard;
+        state.drilldown = severity;
+        state.filter = severity;
+        els.severityFilter.value = severity;
+        document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === severity));
+        renderSeverityDrilldown();
+        renderAlerts();
+        els.severityDrilldown.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+
       const filterBtn = event.target.closest('[data-filter]');
       if (filterBtn) {
         state.filter = filterBtn.dataset.filter;
+        state.drilldown = state.filter;
         els.severityFilter.value = state.filter;
         document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === state.filter));
+        renderSeverityDrilldown();
         renderAlerts();
         return;
       }
@@ -564,6 +682,12 @@
       const detailsBtn = event.target.closest('[data-details]');
       if (detailsBtn) {
         const details = document.getElementById(`details-${detailsBtn.dataset.details}`);
+        if (details) details.classList.toggle('open');
+        return;
+      }
+      const drillDetailsBtn = event.target.closest('[data-drill-details]');
+      if (drillDetailsBtn) {
+        const details = document.getElementById(`drill-details-${drillDetailsBtn.dataset.drillDetails}`);
         if (details) details.classList.toggle('open');
         return;
       }
@@ -595,6 +719,14 @@
         if (action === 'refresh') loadData();
         if (action === 'briefing') await copyText(buildBriefing(), 'Briefing copied.');
         if (action === 'json') window.open('./alerts.json', '_blank', 'noopener,noreferrer');
+        if (action === 'close-drilldown') { state.drilldown = null; renderSeverityDrilldown(); }
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('[data-severity-card]')) {
+        event.preventDefault();
+        event.target.click();
       }
     });
 
