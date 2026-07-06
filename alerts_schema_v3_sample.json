@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "generatedAt": "2026-07-05T23:59:00.000Z",
+  "source": "BleepingComputer",
+  "sourceUrl": "https://www.bleepingcomputer.com/rss-feeds/",
+  "windowDays": 7,
+  "counts": {
+    "critical": 1,
+    "high": 1,
+    "medium": 1,
+    "low": 0,
+    "total": 3
+  },
+  "summary": {
+    "immediateReviewCount": 2,
+    "highestPriorityScore": 92,
+    "topTags": [{ "name": "CVE", "count": 2 }],
+    "topAffectedTechnology": [{ "name": "Microsoft", "count": 1 }],
+    "topThreatTypes": [{ "name": "Remote Code Execution", "count": 1 }]
+  },
+  "topAlert": {
+    "id": "sample-critical",
+    "source": "BleepingComputer",
+    "sourceType": "RSS",
+    "title": "Sample critical alert",
+    "summary": "Example alert summary.",
+    "url": "https://www.bleepingcomputer.com/",
+    "publishedAt": "2026-07-05T23:59:00.000Z",
+    "severity": "critical",
+    "tags": ["CVE", "RCE"],
+    "category": "Cybersecurity News",
+    "recommendedAction": "Review immediately.",
+    "businessImpact": "Potential unauthorized access risk.",
+    "affectedTechnology": ["Microsoft"],
+    "threatType": ["Remote Code Execution"],
+    "reviewStatus": "unreviewed",
+    "priorityScore": 92,
+    "dedupeKey": "sample-critical"
+  },
+  "alerts": []
+}

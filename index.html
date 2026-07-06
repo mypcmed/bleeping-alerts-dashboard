@@ -3,598 +3,604 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BleepingComputer Security Alerts</title>
+  <title>Security Alert Center</title>
   <style>
     :root {
-      --bg: #08111f;
-      --panel: #101b2d;
-      --panel-2: #0d1728;
-      --border: rgba(148, 163, 184, 0.22);
-      --text: #e5edf7;
-      --muted: #91a4ba;
-      --accent: #22d3ee;
+      --bg: #07111f;
+      --panel: #0c1b2d;
+      --panel-2: #10233a;
+      --panel-3: #142a44;
+      --text: #e6eef8;
+      --muted: #8ea3bb;
+      --line: rgba(148, 163, 184, 0.18);
+      --cyan: #22d3ee;
+      --blue: #38bdf8;
       --critical: #ef4444;
       --high: #f97316;
       --medium: #eab308;
       --low: #22c55e;
-      --shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
-      --radius: 16px;
+      --purple: #a78bfa;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
-      min-height: 100vh;
       background:
-        radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 34rem),
-        linear-gradient(180deg, #07101e 0%, #0b1220 100%);
+        radial-gradient(circle at top left, rgba(34, 211, 238, 0.15), transparent 34rem),
+        radial-gradient(circle at top right, rgba(239, 68, 68, 0.13), transparent 32rem),
+        var(--bg);
       color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: var(--sans);
+      min-height: 100vh;
     }
 
     a { color: inherit; }
+    button, input, select { font: inherit; }
 
-    .page {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 22px 0 34px;
-    }
+    .shell { width: min(1440px, calc(100vw - 32px)); margin: 0 auto; padding: 22px 0 36px; }
 
-    .hero {
+    .topbar {
       display: grid;
-      grid-template-columns: 1.5fr 0.8fr;
-      gap: 14px;
-      align-items: stretch;
-      margin-bottom: 14px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 16px;
     }
 
-    .card {
-      background: linear-gradient(180deg, rgba(16, 27, 45, 0.96), rgba(13, 23, 40, 0.94));
-      border: 1px solid var(--border);
+    .brand {
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(12, 27, 45, .94), rgba(16, 35, 58, .72));
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 18px;
     }
 
-    .eyebrow {
-      color: var(--accent);
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      margin: 0 0 8px;
-    }
-
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(1.7rem, 3vw, 2.6rem);
-      line-height: 1.02;
-      letter-spacing: -0.04em;
-    }
-
-    .subhead {
-      color: var(--muted);
-      margin: 0;
-      line-height: 1.5;
-      max-width: 74ch;
-    }
+    .eyebrow { color: var(--cyan); text-transform: uppercase; letter-spacing: .14em; font-size: 11px; font-weight: 800; }
+    h1 { margin: 6px 0 6px; font-size: clamp(28px, 4vw, 46px); line-height: .95; letter-spacing: -0.04em; }
+    .subtitle { margin: 0; color: var(--muted); max-width: 880px; font-size: 14px; }
 
     .status-card {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
+      min-width: 305px;
+      padding: 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(12, 27, 45, 0.88);
+      box-shadow: var(--shadow);
     }
+    .clock { font-family: var(--mono); font-size: 22px; font-weight: 800; color: var(--cyan); }
+    .status-line { color: var(--muted); font-size: 12px; margin-top: 6px; }
+    .health { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 
-    .time-status {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .mini-label {
+    .pill {
+      border: 1px solid var(--line);
+      background: rgba(148, 163, 184, .08);
       color: var(--muted);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
       font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .mini-value {
-      font-size: 1.08rem;
-      font-weight: 800;
-    }
-
-    .meta {
-      color: var(--muted);
-      font-size: 0.85rem;
-      line-height: 1.4;
-    }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .metric {
-      border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.75);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .metric span {
-      display: block;
-      color: var(--muted);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-weight: 800;
-    }
-
-    .metric strong {
-      display: block;
-      margin-top: 4px;
-      font-size: 1.95rem;
-      line-height: 1;
-    }
-
-    .metric.critical strong { color: var(--critical); }
-    .metric.high strong { color: var(--high); }
-    .metric.medium strong { color: var(--medium); }
-    .metric.low strong { color: var(--low); }
-
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .toolbar h2 {
-      font-size: 1.15rem;
-      margin: 0;
-      letter-spacing: -0.02em;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    button, select, input {
-      color: var(--text);
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 8px 11px;
-      font: inherit;
-      font-size: 0.86rem;
-    }
-
-    button {
-      cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease;
-    }
-
-    button.active, button:hover {
-      border-color: rgba(34, 211, 238, 0.7);
-      background: rgba(34, 211, 238, 0.12);
-    }
-
-    input { min-width: 220px; }
-
-    .alert-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .alert {
-      border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.82);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .alert-header {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 12px;
-      align-items: start;
-      padding: 13px 14px;
-    }
-
-    .badge {
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 78px;
-      padding: 6px 8px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      border: 1px solid transparent;
-    }
-
-    .badge.critical { color: #fecaca; border-color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.15); }
-    .badge.high { color: #fed7aa; border-color: rgba(249,115,22,0.55); background: rgba(249,115,22,0.15); }
-    .badge.medium { color: #fef3c7; border-color: rgba(234,179,8,0.55); background: rgba(234,179,8,0.14); }
-    .badge.low { color: #bbf7d0; border-color: rgba(34,197,94,0.55); background: rgba(34,197,94,0.13); }
-
-    .alert h3 {
-      margin: 0 0 5px;
-      font-size: 1rem;
-      line-height: 1.25;
-    }
-
-    .alert h3 a { text-decoration: none; }
-    .alert h3 a:hover { color: var(--accent); }
-
-    .alert-summary {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.45;
-      font-size: 0.92rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .alert-meta {
-      color: var(--muted);
-      font-size: 0.78rem;
-      margin-top: 6px;
-    }
-
-    .alert-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
+      gap: 7px;
       align-items: center;
       white-space: nowrap;
     }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--cyan); box-shadow: 0 0 14px currentColor; }
+    .dot.critical { background: var(--critical); }
+    .dot.high { background: var(--high); }
+    .dot.medium { background: var(--medium); }
+    .dot.low { background: var(--low); }
 
-    .link-btn {
-      text-decoration: none;
-      color: var(--accent);
-      border: 1px solid rgba(34, 211, 238, 0.35);
-      border-radius: 999px;
-      padding: 7px 10px;
-      font-size: 0.82rem;
-      font-weight: 700;
+    .grid { display: grid; gap: 16px; }
+    .metrics { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-bottom: 16px; }
+    .metric {
+      border: 1px solid var(--line);
+      background: rgba(12, 27, 45, 0.78);
+      border-radius: var(--radius-sm);
+      padding: 14px 15px;
+      min-height: 98px;
     }
+    .metric .label { font-size: 12px; color: var(--muted); font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    .metric .value { font-family: var(--mono); font-size: 34px; font-weight: 900; margin-top: 7px; }
+    .metric .hint { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .metric.critical .value { color: var(--critical); }
+    .metric.high .value { color: var(--high); }
+    .metric.medium .value { color: var(--medium); }
+    .metric.low .value { color: var(--low); }
 
-    .details {
-      display: none;
-      border-top: 1px solid var(--border);
-      padding: 0 14px 14px 104px;
-      color: var(--muted);
-      font-size: 0.91rem;
-      line-height: 1.5;
+    .layout { display: grid; grid-template-columns: 390px minmax(0, 1fr); gap: 16px; align-items: start; }
+    .panel {
+      border: 1px solid var(--line);
+      background: rgba(12, 27, 45, 0.80);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
+    .panel-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 15px 16px; border-bottom: 1px solid var(--line); background: rgba(20, 42, 68, .48); }
+    .panel-title { font-weight: 900; letter-spacing: -0.02em; }
+    .panel-subtitle { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .panel-body { padding: 14px 16px; }
 
-    .alert.open .details { display: block; }
-
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 10px 0;
+    .command-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .btn {
+      border: 1px solid var(--line);
+      background: rgba(148, 163, 184, .09);
+      color: var(--text);
+      padding: 9px 11px;
+      border-radius: 11px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
     }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(34, 211, 238, .55); background: rgba(34, 211, 238, .10); }
+    .btn.active { border-color: rgba(34, 211, 238, .7); background: rgba(34, 211, 238, .14); color: #dffaff; }
+    .btn.critical { color: #fecaca; }
+    .btn.high { color: #fed7aa; }
 
-    .tag {
-      color: #cbd5e1;
-      background: rgba(148, 163, 184, 0.12);
-      border: 1px solid rgba(148, 163, 184, 0.16);
-      border-radius: 999px;
-      padding: 4px 8px;
-      font-size: 0.75rem;
+    .controls { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; margin-bottom: 14px; }
+    .input, .select {
+      width: 100%;
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: rgba(7, 17, 31, .7);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
     }
+    .input:focus, .select:focus { border-color: rgba(34, 211, 238, .7); }
 
-    .footer {
-      color: var(--muted);
-      margin-top: 18px;
-      font-size: 0.82rem;
-      text-align: center;
+    .focus-card {
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(239, 68, 68, .24);
+      background: linear-gradient(135deg, rgba(239, 68, 68, .10), rgba(249, 115, 22, .08));
+      margin-bottom: 12px;
     }
+    .focus-title { font-weight: 900; margin-bottom: 4px; }
+    .focus-meta { color: var(--muted); font-size: 12px; }
+    .focus-action { color: #fecaca; font-size: 13px; margin-top: 10px; line-height: 1.45; }
 
-    .empty {
-      text-align: center;
-      padding: 28px;
-      color: var(--muted);
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-btn { font-size: 12px; padding: 7px 9px; border-radius: 999px; border: 1px solid var(--line); background: rgba(148, 163, 184, .07); color: var(--muted); cursor: pointer; }
+    .tag-btn:hover, .tag-btn.active { color: var(--text); border-color: rgba(34, 211, 238, .5); }
+
+    .alert-list { display: grid; gap: 11px; }
+    .alert {
+      border: 1px solid var(--line);
+      background: rgba(16, 35, 58, .58);
+      border-radius: var(--radius-sm);
+      padding: 13px;
     }
+    .alert-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .alert-title { font-weight: 900; line-height: 1.2; margin: 0 0 6px; }
+    .alert-title a { text-decoration: none; }
+    .alert-title a:hover { color: var(--cyan); }
+    .alert-meta { color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .severity { font-size: 11px; font-weight: 900; text-transform: uppercase; border-radius: 999px; padding: 5px 8px; border: 1px solid var(--line); }
+    .severity.critical { color: #fecaca; border-color: rgba(239,68,68,.5); background: rgba(239,68,68,.12); }
+    .severity.high { color: #fed7aa; border-color: rgba(249,115,22,.5); background: rgba(249,115,22,.12); }
+    .severity.medium { color: #fef3c7; border-color: rgba(234,179,8,.5); background: rgba(234,179,8,.10); }
+    .severity.low { color: #bbf7d0; border-color: rgba(34,197,94,.5); background: rgba(34,197,94,.10); }
+    .score { font-family: var(--mono); color: var(--cyan); font-weight: 900; }
+    .summary { color: #c7d5e5; font-size: 13px; line-height: 1.45; margin: 9px 0 10px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 9px 0; }
+    .chip { font-size: 11px; color: var(--muted); border: 1px solid var(--line); padding: 4px 7px; border-radius: 999px; background: rgba(148,163,184,.06); }
+    .alert-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .mini-btn { border: 1px solid var(--line); background: rgba(7,17,31,.55); color: var(--text); border-radius: 9px; padding: 7px 9px; font-size: 12px; font-weight: 800; cursor: pointer; text-decoration: none; }
+    .mini-btn:hover { border-color: rgba(34,211,238,.55); }
+    .details { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); color: #cbd8e8; font-size: 13px; line-height: 1.5; }
+    .details.open { display: block; }
+    .details-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .detail-box { background: rgba(7,17,31,.45); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+    .detail-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 900; margin-bottom: 4px; }
 
-    @media (max-width: 860px) {
-      .hero { grid-template-columns: 1fr; }
-      .metrics { grid-template-columns: repeat(2, 1fr); }
-      .metric.total { grid-column: span 2; }
-      .alert-header { grid-template-columns: 1fr; }
-      .alert-actions { justify-content: flex-start; }
-      .details { padding-left: 14px; }
-      input { min-width: 100%; }
-      .controls { width: 100%; }
-      .controls > * { flex: 1; }
+    .queue-list { display: grid; gap: 10px; }
+    .queue-item { padding: 11px; border: 1px solid var(--line); border-radius: 12px; background: rgba(7,17,31,.42); cursor: pointer; }
+    .queue-item:hover { border-color: rgba(34,211,238,.45); }
+    .queue-title { font-size: 13px; font-weight: 900; line-height: 1.25; }
+    .queue-meta { margin-top: 6px; color: var(--muted); font-size: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .empty { color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; padding: 18px; text-align: center; }
+    .toast { position: fixed; right: 18px; bottom: 18px; padding: 12px 14px; border-radius: 12px; background: #10233a; border: 1px solid var(--line); box-shadow: var(--shadow); color: var(--text); display: none; z-index: 10; }
+    .toast.show { display: block; }
+
+    @media (max-width: 1050px) {
+      .topbar, .layout { grid-template-columns: 1fr; }
+      .status-card { min-width: 0; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .controls { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .shell { width: min(100vw - 20px, 1440px); padding-top: 10px; }
+      .metrics { grid-template-columns: 1fr; }
+      .details-grid { grid-template-columns: 1fr; }
+      .alert-top { display: block; }
+      .severity { display: inline-flex; margin-bottom: 8px; }
     }
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="hero">
-      <div class="card">
-        <p class="eyebrow">BleepingComputer RSS</p>
-        <h1>Cybersecurity Alert Dashboard</h1>
-        <p class="subhead">A simple 7-day security news dashboard powered by n8n. The workflow updates <strong>alerts.json</strong>; this page renders the latest alert counts, prioritized stories, and recommended next steps.</p>
+  <main class="shell">
+    <section class="topbar">
+      <div class="brand">
+        <div class="eyebrow">Security Operations Briefing</div>
+        <h1>Security Alert Center</h1>
+        <p class="subtitle">Prioritized cybersecurity alert visibility from BleepingComputer RSS. Built for quick triage, source validation, escalation, and daily review.</p>
       </div>
-      <div class="card status-card">
-        <div class="time-status">
-          <div>
-            <div class="mini-label">Local Time</div>
-            <div class="mini-value" id="localTime">--:--</div>
+      <aside class="status-card">
+        <div class="eyebrow">Local Time</div>
+        <div id="clock" class="clock">--:--:--</div>
+        <div id="updated" class="status-line">Waiting for alerts.json...</div>
+        <div class="health">
+          <span class="pill"><span class="dot"></span><span id="dataHealth">Loading</span></span>
+          <span class="pill">7-day feed</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid metrics">
+      <div class="metric critical"><div class="label">Critical</div><div id="criticalCount" class="value">0</div><div class="hint">Immediate review</div></div>
+      <div class="metric high"><div class="label">High</div><div id="highCount" class="value">0</div><div class="hint">Review today</div></div>
+      <div class="metric medium"><div class="label">Medium</div><div id="mediumCount" class="value">0</div><div class="hint">Planned review</div></div>
+      <div class="metric low"><div class="label">Low</div><div id="lowCount" class="value">0</div><div class="hint">Awareness</div></div>
+      <div class="metric"><div class="label">Total</div><div id="totalCount" class="value">0</div><div class="hint"><span id="visibleCount">0</span> visible</div></div>
+    </section>
+
+    <section class="command-row">
+      <button class="btn" data-command="refresh">Refresh Data</button>
+      <button class="btn critical" data-filter="critical">View Critical</button>
+      <button class="btn high" data-filter="high">View High</button>
+      <button class="btn" data-filter="all">Show All</button>
+      <button class="btn" data-command="briefing">Copy Briefing</button>
+      <button class="btn" data-command="json">Open JSON</button>
+    </section>
+
+    <section class="layout">
+      <aside class="grid">
+        <div class="panel">
+          <div class="panel-head">
+            <div><div class="panel-title">Immediate Review Queue</div><div class="panel-subtitle">Critical, high, and high-score alerts</div></div>
+          </div>
+          <div class="panel-body">
+            <div id="focusCard" class="focus-card"></div>
+            <div id="queueList" class="queue-list"></div>
           </div>
         </div>
-        <div class="meta" id="statusLine">Loading alerts.json...</div>
-      </div>
-    </section>
 
-    <section class="metrics" aria-label="Severity totals">
-      <div class="metric critical"><span>Critical</span><strong id="criticalCount">0</strong></div>
-      <div class="metric high"><span>High</span><strong id="highCount">0</strong></div>
-      <div class="metric medium"><span>Medium</span><strong id="mediumCount">0</strong></div>
-      <div class="metric low"><span>Low</span><strong id="lowCount">0</strong></div>
-      <div class="metric total"><span>Total</span><strong id="totalCount">0</strong></div>
-    </section>
-
-    <section class="card">
-      <div class="toolbar">
-        <h2>7-Day Feed</h2>
-        <div class="controls">
-          <button type="button" class="filter active" data-filter="all">All</button>
-          <button type="button" class="filter" data-filter="critical">Critical</button>
-          <button type="button" class="filter" data-filter="high">High</button>
-          <button type="button" class="filter" data-filter="medium">Medium</button>
-          <button type="button" class="filter" data-filter="low">Low</button>
-          <select id="limitSelect" title="Visible alerts">
-            <option value="10">10 alerts</option>
-            <option value="12" selected>12 alerts</option>
-            <option value="999">All alerts</option>
-          </select>
-          <input id="searchBox" type="search" placeholder="Search title, tag, summary..." />
+        <div class="panel">
+          <div class="panel-head">
+            <div><div class="panel-title">Security Tags</div><div class="panel-subtitle">Quick drill-down filters</div></div>
+          </div>
+          <div class="panel-body">
+            <div id="tagCloud" class="tag-cloud"></div>
+          </div>
         </div>
-      </div>
-      <div id="alertList" class="alert-list"></div>
-    </section>
+      </aside>
 
-    <p class="footer">Static page. Live data file: <code>alerts.json</code>. Normal n8n operation should update only <code>alerts.json</code>.</p>
+      <section class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Alert Feed</div><div class="panel-subtitle">Use Details, Source, Copy Notes, and Escalate for triage</div></div>
+        </div>
+        <div class="panel-body">
+          <div class="controls">
+            <input id="search" class="input" placeholder="Search title, summary, tags, technology, threat type..." />
+            <select id="severityFilter" class="select" aria-label="Severity filter">
+              <option value="all">All severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <select id="limit" class="select" aria-label="Alert limit">
+              <option value="10">10 alerts</option>
+              <option value="12" selected>12 alerts</option>
+              <option value="all">All alerts</option>
+            </select>
+          </div>
+          <div id="alertList" class="alert-list"></div>
+        </div>
+      </section>
+    </section>
   </main>
+
+  <div id="toast" class="toast"></div>
 
   <script>
     const state = {
       data: null,
       alerts: [],
       filter: 'all',
-      query: '',
-      limit: 12
+      tag: null,
+      search: '',
+      limit: '12'
     };
 
-    const fallbackData = {
-      generatedAt: new Date().toISOString(),
-      source: 'BleepingComputer',
-      windowDays: 7,
-      counts: { critical: 0, high: 0, medium: 1, low: 0, total: 1 },
-      alerts: [
-        {
-          id: 'dashboard-initialized',
-          source: 'BleepingComputer',
-          sourceType: 'RSS',
-          title: 'Dashboard initialized',
-          summary: 'n8n will replace alerts.json with current BleepingComputer RSS data.',
-          url: 'https://www.bleepingcomputer.com/',
-          publishedAt: new Date().toISOString(),
-          severity: 'medium',
-          tags: ['Initial'],
-          category: 'Cybersecurity News',
-          recommendedAction: 'Confirm the n8n workflow updates alerts.json in the GitHub repository.',
-          dedupeKey: 'dashboard-initialized'
-        }
-      ]
+    const els = {
+      clock: document.getElementById('clock'),
+      updated: document.getElementById('updated'),
+      dataHealth: document.getElementById('dataHealth'),
+      criticalCount: document.getElementById('criticalCount'),
+      highCount: document.getElementById('highCount'),
+      mediumCount: document.getElementById('mediumCount'),
+      lowCount: document.getElementById('lowCount'),
+      totalCount: document.getElementById('totalCount'),
+      visibleCount: document.getElementById('visibleCount'),
+      focusCard: document.getElementById('focusCard'),
+      queueList: document.getElementById('queueList'),
+      tagCloud: document.getElementById('tagCloud'),
+      alertList: document.getElementById('alertList'),
+      search: document.getElementById('search'),
+      severityFilter: document.getElementById('severityFilter'),
+      limit: document.getElementById('limit'),
+      toast: document.getElementById('toast')
     };
-
-    function severityRank(severity) {
-      return { critical: 4, high: 3, medium: 2, low: 1 }[String(severity || 'low').toLowerCase()] || 0;
-    }
 
     function escapeHtml(value) {
-      return String(value ?? '').replace(/[&<>'"]/g, char => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[char]));
+      return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
     }
 
     function formatDate(value) {
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return 'Unknown date';
-      return new Intl.DateTimeFormat('en-US', {
-        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
-      }).format(date);
+      if (!value) return 'Unknown time';
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return 'Unknown time';
+      return d.toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
     }
 
-    function daysAgoCutoff(days) {
-      return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    function severityRank(severity) {
+      return { critical: 4, high: 3, medium: 2, low: 1 }[String(severity).toLowerCase()] || 0;
+    }
+
+    function normalizedAlert(alert) {
+      return {
+        id: alert.id || btoa(String(alert.url || alert.title || Math.random())).replace(/=+$/,'').slice(0, 24),
+        source: alert.source || 'BleepingComputer',
+        sourceType: alert.sourceType || 'RSS',
+        title: alert.title || 'Untitled alert',
+        summary: alert.summary || '',
+        url: alert.url || '#',
+        publishedAt: alert.publishedAt || alert.pubDate || alert.isoDate || null,
+        severity: String(alert.severity || 'low').toLowerCase(),
+        tags: Array.isArray(alert.tags) ? alert.tags : [],
+        category: alert.category || 'Cybersecurity News',
+        recommendedAction: alert.recommendedAction || 'Review the source article and determine applicability to the environment.',
+        businessImpact: alert.businessImpact || 'Potential operational or security relevance if affected technology exists in the environment.',
+        affectedTechnology: Array.isArray(alert.affectedTechnology) ? alert.affectedTechnology : [],
+        threatType: Array.isArray(alert.threatType) ? alert.threatType : [],
+        reviewStatus: alert.reviewStatus || 'unreviewed',
+        priorityScore: Number(alert.priorityScore || 0),
+        dedupeKey: alert.dedupeKey || alert.url || alert.title || ''
+      };
+    }
+
+    function updateClock() {
+      els.clock.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function toast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add('show');
+      setTimeout(() => els.toast.classList.remove('show'), 2600);
     }
 
     async function loadData() {
+      els.dataHealth.textContent = 'Loading';
       try {
         const response = await fetch(`./alerts.json?v=${Date.now()}`, { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        state.data = await response.json();
-        document.getElementById('statusLine').textContent = `Updated ${formatDate(state.data.generatedAt)} | ${state.data.source || 'BleepingComputer'} | ${state.data.windowDays || 7}-day window`;
+        const data = await response.json();
+        const alerts = Array.isArray(data.alerts) ? data.alerts.map(normalizedAlert) : [];
+        state.data = data;
+        state.alerts = alerts.sort((a, b) => {
+          const rank = severityRank(b.severity) - severityRank(a.severity);
+          if (rank !== 0) return rank;
+          const score = (b.priorityScore || 0) - (a.priorityScore || 0);
+          if (score !== 0) return score;
+          return new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0);
+        });
+        els.dataHealth.textContent = alerts.length ? 'Live data' : 'No alerts';
+        render();
       } catch (error) {
-        console.error('Unable to load alerts.json:', error);
-        state.data = fallbackData;
-        document.getElementById('statusLine').textContent = 'Using fallback data. Confirm alerts.json is published at the repository root.';
-      }
-
-      normalizeData();
-      renderMetrics();
-      renderAlerts();
-    }
-
-    function normalizeData() {
-      const windowDays = Number(state.data.windowDays || 7);
-      const cutoff = daysAgoCutoff(windowDays);
-      const rawAlerts = Array.isArray(state.data.alerts) ? state.data.alerts : [];
-
-      const normalized = rawAlerts.map((alert, index) => {
-        const publishedAt = alert.publishedAt || alert.isoDate || alert.pubDate || state.data.generatedAt || new Date().toISOString();
-        return {
-          id: alert.id || `alert-${index}`,
-          source: alert.source || state.data.source || 'BleepingComputer',
-          sourceType: alert.sourceType || 'RSS',
-          title: alert.title || 'Untitled alert',
-          summary: alert.summary || alert.contentSnippet || alert.description || '',
-          url: alert.url || alert.link || '#',
-          publishedAt,
-          severity: String(alert.severity || 'low').toLowerCase(),
-          tags: Array.isArray(alert.tags) ? alert.tags : [],
-          category: alert.category || 'Cybersecurity News',
-          recommendedAction: alert.recommendedAction || 'Review for applicability and determine whether action is required.',
-          dedupeKey: alert.dedupeKey || alert.url || alert.link || alert.title || `alert-${index}`
-        };
-      });
-
-      const inWindow = normalized.filter(alert => {
-        const date = new Date(alert.publishedAt);
-        return !Number.isNaN(date.getTime()) && date >= cutoff;
-      });
-
-      state.alerts = inWindow.sort((a, b) => {
-        const sev = severityRank(b.severity) - severityRank(a.severity);
-        if (sev !== 0) return sev;
-        return new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0);
-      });
-
-      const statusLine = document.getElementById('statusLine');
-      if (rawAlerts.length && !state.alerts.length) {
-        statusLine.textContent += ` | Loaded ${rawAlerts.length} alerts, but none are inside the ${windowDays}-day display window.`;
-      } else {
-        statusLine.textContent += ` | Loaded ${state.alerts.length} visible alerts.`;
+        els.dataHealth.textContent = 'Load error';
+        els.alertList.innerHTML = `<div class="empty">Unable to load alerts.json. Confirm the file exists in the repository root and that n8n has updated it.<br><br>${escapeHtml(error.message)}</div>`;
       }
     }
 
-    function computeCounts() {
-      return state.alerts.reduce((acc, alert) => {
-        const sev = String(alert.severity || 'low').toLowerCase();
+    function countBySeverity(alerts) {
+      return alerts.reduce((acc, alert) => {
+        const sev = alert.severity || 'low';
         acc[sev] = (acc[sev] || 0) + 1;
         acc.total += 1;
         return acc;
       }, { critical: 0, high: 0, medium: 0, low: 0, total: 0 });
     }
 
-    function renderMetrics() {
-      const counts = computeCounts();
-      document.getElementById('criticalCount').textContent = counts.critical;
-      document.getElementById('highCount').textContent = counts.high;
-      document.getElementById('mediumCount').textContent = counts.medium;
-      document.getElementById('lowCount').textContent = counts.low;
-      document.getElementById('totalCount').textContent = counts.total;
-    }
-
-    function filteredAlerts() {
-      const query = state.query.trim().toLowerCase();
+    function filterAlerts() {
+      const q = state.search.trim().toLowerCase();
       return state.alerts.filter(alert => {
-        const sev = String(alert.severity || 'low').toLowerCase();
-        if (state.filter !== 'all' && sev !== state.filter) return false;
-        if (!query) return true;
+        if (state.filter !== 'all' && alert.severity !== state.filter) return false;
+        if (state.tag && !(alert.tags || []).some(tag => String(tag).toLowerCase() === state.tag.toLowerCase())) return false;
+        if (!q) return true;
         const haystack = [
           alert.title,
           alert.summary,
           alert.recommendedAction,
-          alert.category,
-          ...(Array.isArray(alert.tags) ? alert.tags : [])
-        ].filter(Boolean).join(' ').toLowerCase();
-        return haystack.includes(query);
-      }).slice(0, state.limit);
+          alert.businessImpact,
+          ...(alert.tags || []),
+          ...(alert.affectedTechnology || []),
+          ...(alert.threatType || [])
+        ].join(' ').toLowerCase();
+        return haystack.includes(q);
+      });
+    }
+
+    function renderMetrics() {
+      const counts = state.data?.counts || countBySeverity(state.alerts);
+      els.criticalCount.textContent = counts.critical || 0;
+      els.highCount.textContent = counts.high || 0;
+      els.mediumCount.textContent = counts.medium || 0;
+      els.lowCount.textContent = counts.low || 0;
+      els.totalCount.textContent = counts.total ?? state.alerts.length;
+      const generated = state.data?.generatedAt ? formatDate(state.data.generatedAt) : 'Unknown';
+      els.updated.textContent = `Updated: ${generated} | Source: ${state.data?.source || 'BleepingComputer'}`;
+    }
+
+    function renderFocus() {
+      const top = state.alerts.find(a => ['critical','high'].includes(a.severity)) || state.alerts[0];
+      if (!top) {
+        els.focusCard.innerHTML = '<div class="focus-title">No current focus</div><div class="focus-meta">No alerts are available in alerts.json.</div>';
+        els.queueList.innerHTML = '';
+        return;
+      }
+      els.focusCard.innerHTML = `
+        <div class="focus-title">${escapeHtml(top.title)}</div>
+        <div class="focus-meta"><span class="severity ${top.severity}">${escapeHtml(top.severity)}</span> <span class="score">Score ${top.priorityScore || 0}</span> · ${formatDate(top.publishedAt)}</div>
+        <div class="focus-action">${escapeHtml(top.recommendedAction)}</div>
+      `;
+      const queue = state.alerts
+        .filter(a => ['critical','high'].includes(a.severity) || (a.priorityScore || 0) >= 70)
+        .slice(0, 6);
+      els.queueList.innerHTML = queue.length ? queue.map(a => `
+        <div class="queue-item" data-jump="${escapeHtml(a.id)}">
+          <div class="queue-title">${escapeHtml(a.title)}</div>
+          <div class="queue-meta"><span class="severity ${a.severity}">${escapeHtml(a.severity)}</span><span class="score">${a.priorityScore || 0}/100</span><span>${formatDate(a.publishedAt)}</span></div>
+        </div>
+      `).join('') : '<div class="empty">No critical or high alerts in the current feed.</div>';
+    }
+
+    function renderTags() {
+      const counts = new Map();
+      state.alerts.forEach(alert => (alert.tags || []).forEach(tag => counts.set(tag, (counts.get(tag) || 0) + 1)));
+      const tags = [...counts.entries()].sort((a,b) => b[1] - a[1]).slice(0, 18);
+      els.tagCloud.innerHTML = tags.length ? tags.map(([tag, count]) => `
+        <button class="tag-btn ${state.tag === tag ? 'active' : ''}" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)} (${count})</button>
+      `).join('') : '<div class="empty">No tags available.</div>';
     }
 
     function renderAlerts() {
-      const list = document.getElementById('alertList');
-      const alerts = filteredAlerts();
-
-      if (!alerts.length) {
-        list.innerHTML = '<div class="empty">No alerts match the current filter.</div>';
+      const filtered = filterAlerts();
+      const shown = state.limit === 'all' ? filtered : filtered.slice(0, Number(state.limit));
+      els.visibleCount.textContent = shown.length;
+      if (!shown.length) {
+        els.alertList.innerHTML = '<div class="empty">No alerts match the current filters. Try Show All or clear the search box.</div>';
         return;
       }
-
-      list.innerHTML = alerts.map((alert, index) => {
-        const severity = String(alert.severity || 'low').toLowerCase();
-        const tags = Array.isArray(alert.tags) ? alert.tags : [];
-        const id = escapeHtml(alert.id || `alert-${index}`);
-        const url = escapeHtml(alert.url || '#');
+      els.alertList.innerHTML = shown.map(alert => {
+        const tags = [...(alert.tags || []), ...(alert.affectedTechnology || []), ...(alert.threatType || [])].filter(Boolean).slice(0, 12);
         return `
-          <article class="alert" id="${id}">
-            <div class="alert-header">
-              <div><span class="badge ${severity}">${escapeHtml(severity)}</span></div>
+          <article class="alert" id="alert-${escapeHtml(alert.id)}">
+            <div class="alert-top">
               <div>
-                <h3><a href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(alert.title || 'Untitled alert')}</a></h3>
-                <p class="alert-summary">${escapeHtml(alert.summary || 'No summary provided.')}</p>
-                <div class="alert-meta">${escapeHtml(alert.source || 'BleepingComputer')} | ${escapeHtml(alert.category || 'Cybersecurity News')} | ${formatDate(alert.publishedAt)}</div>
+                <h3 class="alert-title"><a href="${escapeHtml(alert.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(alert.title)}</a></h3>
+                <div class="alert-meta"><span>${formatDate(alert.publishedAt)}</span><span>${escapeHtml(alert.source)}</span><span>${escapeHtml(alert.category)}</span><span class="score">Priority ${alert.priorityScore || 0}/100</span></div>
               </div>
-              <div class="alert-actions">
-                <button type="button" onclick="toggleDetails('${id}')">Details</button>
-                <a class="link-btn" href="${url}" target="_blank" rel="noopener noreferrer">Source</a>
-              </div>
+              <span class="severity ${alert.severity}">${escapeHtml(alert.severity)}</span>
             </div>
-            <div class="details">
-              <div class="tag-row">${tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('') || '<span class="tag">No tags</span>'}</div>
-              <strong>Recommended action:</strong>
-              <div>${escapeHtml(alert.recommendedAction || 'Review for applicability and determine whether action is required.')}</div>
-              <div class="alert-meta">Dedupe key: ${escapeHtml(alert.dedupeKey || alert.id || '')}</div>
+            <p class="summary">${escapeHtml(alert.summary)}</p>
+            <div class="chips">${tags.map(tag => `<span class="chip">${escapeHtml(tag)}</span>`).join('')}</div>
+            <div class="alert-actions">
+              <button class="mini-btn" data-details="${escapeHtml(alert.id)}">Details</button>
+              <a class="mini-btn" href="${escapeHtml(alert.url)}" target="_blank" rel="noopener noreferrer">Source</a>
+              <button class="mini-btn" data-copy="${escapeHtml(alert.id)}">Copy Notes</button>
+              <button class="mini-btn" data-escalate="${escapeHtml(alert.id)}">Escalate</button>
+            </div>
+            <div class="details" id="details-${escapeHtml(alert.id)}">
+              <div class="details-grid">
+                <div class="detail-box"><div class="detail-label">Recommended action</div>${escapeHtml(alert.recommendedAction)}</div>
+                <div class="detail-box"><div class="detail-label">Business impact</div>${escapeHtml(alert.businessImpact)}</div>
+                <div class="detail-box"><div class="detail-label">Affected technology</div>${escapeHtml((alert.affectedTechnology || []).join(', ') || 'Not identified')}</div>
+                <div class="detail-box"><div class="detail-label">Threat type</div>${escapeHtml((alert.threatType || []).join(', ') || 'Not identified')}</div>
+                <div class="detail-box"><div class="detail-label">Review status</div>${escapeHtml(alert.reviewStatus)}</div>
+                <div class="detail-box"><div class="detail-label">Dedupe key</div><span style="font-family:var(--mono);font-size:11px;">${escapeHtml(alert.dedupeKey)}</span></div>
+              </div>
             </div>
           </article>
         `;
       }).join('');
     }
 
-    function toggleDetails(id) {
-      const el = document.getElementById(id);
-      if (el) el.classList.toggle('open');
+    function render() {
+      renderMetrics();
+      renderFocus();
+      renderTags();
+      renderAlerts();
     }
 
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('localTime').textContent = new Intl.DateTimeFormat('en-US', {
-        hour: 'numeric', minute: '2-digit', second: '2-digit'
-      }).format(now);
+    function buildNote(alert) {
+      return `Cybersecurity Alert Triage\n\nTitle: ${alert.title}\nSeverity: ${alert.severity.toUpperCase()}\nPriority Score: ${alert.priorityScore || 0}/100\nPublished: ${alert.publishedAt || 'Unknown'}\nSource: ${alert.url}\n\nSummary:\n${alert.summary}\n\nRecommended Action:\n${alert.recommendedAction}\n\nBusiness Impact:\n${alert.businessImpact}\n\nTags: ${(alert.tags || []).join(', ') || 'None'}\nAffected Technology: ${(alert.affectedTechnology || []).join(', ') || 'Not identified'}\nThreat Type: ${(alert.threatType || []).join(', ') || 'Not identified'}\n`;
     }
 
-    document.querySelectorAll('.filter').forEach(button => {
-      button.addEventListener('click', () => {
-        document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
-        button.classList.add('active');
-        state.filter = button.dataset.filter;
+    function buildBriefing() {
+      const counts = state.data?.counts || countBySeverity(state.alerts);
+      const top = state.alerts.slice(0, 5).map((a, i) => `${i + 1}. [${a.severity.toUpperCase()} | ${a.priorityScore || 0}/100] ${a.title}\n   Action: ${a.recommendedAction}\n   Source: ${a.url}`).join('\n\n');
+      return `Cybersecurity Alert Briefing\nGenerated: ${state.data?.generatedAt || new Date().toISOString()}\nWindow: ${state.data?.windowDays || 7} days\n\nCritical: ${counts.critical || 0}\nHigh: ${counts.high || 0}\nMedium: ${counts.medium || 0}\nLow: ${counts.low || 0}\nTotal: ${counts.total ?? state.alerts.length}\n\nTop Alerts:\n${top || 'No alerts available.'}`;
+    }
+
+    async function copyText(text, message) {
+      await navigator.clipboard.writeText(text);
+      toast(message);
+    }
+
+    document.addEventListener('click', async event => {
+      const filterBtn = event.target.closest('[data-filter]');
+      if (filterBtn) {
+        state.filter = filterBtn.dataset.filter;
+        els.severityFilter.value = state.filter;
+        document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === state.filter));
         renderAlerts();
-      });
+        return;
+      }
+      const tagBtn = event.target.closest('[data-tag]');
+      if (tagBtn) {
+        state.tag = state.tag === tagBtn.dataset.tag ? null : tagBtn.dataset.tag;
+        renderTags();
+        renderAlerts();
+        return;
+      }
+      const detailsBtn = event.target.closest('[data-details]');
+      if (detailsBtn) {
+        const details = document.getElementById(`details-${detailsBtn.dataset.details}`);
+        if (details) details.classList.toggle('open');
+        return;
+      }
+      const copyBtn = event.target.closest('[data-copy]');
+      if (copyBtn) {
+        const alert = state.alerts.find(a => a.id === copyBtn.dataset.copy);
+        if (alert) await copyText(buildNote(alert), 'Triage notes copied.');
+        return;
+      }
+      const escalateBtn = event.target.closest('[data-escalate]');
+      if (escalateBtn) {
+        const alert = state.alerts.find(a => a.id === escalateBtn.dataset.escalate);
+        if (alert) {
+          const subject = encodeURIComponent(`Security alert escalation: ${alert.title}`);
+          const body = encodeURIComponent(buildNote(alert));
+          window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+        return;
+      }
+      const jump = event.target.closest('[data-jump]');
+      if (jump) {
+        const item = document.getElementById(`alert-${jump.dataset.jump}`);
+        if (item) item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      const command = event.target.closest('[data-command]');
+      if (command) {
+        const action = command.dataset.command;
+        if (action === 'refresh') loadData();
+        if (action === 'briefing') await copyText(buildBriefing(), 'Briefing copied.');
+        if (action === 'json') window.open('./alerts.json', '_blank', 'noopener,noreferrer');
+      }
     });
 
-    document.getElementById('searchBox').addEventListener('input', event => {
-      state.query = event.target.value;
-      renderAlerts();
-    });
-
-    document.getElementById('limitSelect').addEventListener('change', event => {
-      state.limit = Number(event.target.value);
-      renderAlerts();
-    });
+    els.search.addEventListener('input', event => { state.search = event.target.value; renderAlerts(); });
+    els.severityFilter.addEventListener('change', event => { state.filter = event.target.value; renderAlerts(); });
+    els.limit.addEventListener('change', event => { state.limit = event.target.value; renderAlerts(); });
 
     updateClock();
     setInterval(updateClock, 1000);
