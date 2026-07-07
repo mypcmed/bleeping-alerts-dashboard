@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-07-06T02:49:37.731Z",
+  "generatedAt": "2026-07-07T00:00:06.667Z",
   "source": "BleepingComputer",
   "sourceUrl": "https://www.bleepingcomputer.com/rss-feeds/",
   "windowDays": 7,
   "counts": {
     "critical": 1,
     "high": 4,
-    "medium": 3,
+    "medium": 6,
     "low": 0,
-    "total": 8
+    "total": 11
   },
   "summary": {
     "immediateReviewCount": 5,
@@ -16,22 +16,22 @@
     "topTags": [
       "Microsoft",
       "Ransomware",
+      "Credential Theft",
+      "Phishing",
       "SharePoint",
       "CISA",
       "RCE",
       "Fortinet",
-      "Credential Theft",
       "Cisco",
-      "Data Breach",
-      "Phishing"
+      "Data Breach"
     ],
     "remediationStats": {
-      "totalWithRemediation": 8,
-      "vendorValidationRequired": 8,
+      "totalWithRemediation": 11,
+      "vendorValidationRequired": 11,
       "confidence": {
         "high": 0,
-        "medium": 6,
-        "low": 2
+        "medium": 8,
+        "low": 3
       }
     }
   },
@@ -233,6 +233,101 @@
       "remediationConfidence": "low",
       "requiresVendorValidation": true,
       "dedupeKey": "https://www.bleepingcomputer.com/news/security/medtronic-notifies-customers-impacted-by-shinyhunters-data-breach/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "Max severity Adobe ColdFusion flaw now exploited in attacks",
+      "summary": "Attackers are now exploiting a maximum-severity Adobe ColdFusion vulnerability tracked as CVE-2026-48282, according to vulnerability intelligence company KEVIntel. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/max-severity-adobe-coldfusion-flaw-now-exploited-in-attacks/",
+      "publishedAt": "2026-07-06T13:18:37.000Z",
+      "severity": "medium",
+      "tags": [
+        "CVE",
+        "CISA KEV"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review for awareness and determine whether the topic applies to the environment.",
+      "businessImpact": "Business impact appears informational unless affected technology is present in the environment.",
+      "affectedTechnology": [],
+      "threatType": [
+        "Exploitation",
+        "Vulnerability",
+        "CVE / Vulnerability"
+      ],
+      "priorityScore": 40,
+      "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n3. Identify the relevant CVE or vendor advisory and confirm affected versions.\n4. Check patch availability, maintenance windows, and compensating controls.\n5. Prioritize patching based on severity, exploitability, exposure, and business criticality.\n6. Treat as urgent. Check CISA KEV/vendor guidance, confirm internet exposure, and search SIEM/EDR logs for related indicators.\n7. If exposure is confirmed, consider emergency change control, temporary isolation, access restriction, or compensating controls.\n15. Track for awareness and validate applicability during normal security review.",
+      "remediationShort": "Treat as urgent. Validate exposure, check for indicators of compromise, apply vendor mitigation, and patch or isolate affected systems.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/max-severity-adobe-coldfusion-flaw-now-exploited-in-attacks/",
+      "remediationConfidence": "medium",
+      "requiresVendorValidation": true,
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/max-severity-adobe-coldfusion-flaw-now-exploited-in-attacks/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "Phishing poses as big-brand job interview to steal Google accounts",
+      "summary": "A phishing campaign is impersonating more than 30 well-known brands, including Adobe, Netflix, Coca-Cola, and OpenAI, in fake job interviews to steal Google account credentials from marketing professionals. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/phishing-poses-as-big-brand-job-interview-to-steal-google-accounts/",
+      "publishedAt": "2026-07-06T20:27:37.000Z",
+      "severity": "medium",
+      "tags": [
+        "Phishing",
+        "Credential Theft"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review email security controls, quarantine activity, user reports, and related indicators.",
+      "businessImpact": "Potential business impact includes account compromise, unauthorized access, lateral movement, email abuse, and privileged access exposure.",
+      "affectedTechnology": [],
+      "threatType": [
+        "Phishing",
+        "Credential Theft"
+      ],
+      "priorityScore": 35,
+      "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n10. Review impacted identities, enforce MFA, revoke suspicious sessions, reset affected credentials, and inspect mailbox rules.\n11. Search email security logs and endpoint telemetry for related indicators.\n15. Track for awareness and validate applicability during normal security review.",
+      "remediationShort": "Focus on identity protection: MFA verification, session revocation, password resets where needed, mailbox rule review, and sign-in log investigation.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/phishing-poses-as-big-brand-job-interview-to-steal-google-accounts/",
+      "remediationConfidence": "low",
+      "requiresVendorValidation": true,
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/phishing-poses-as-big-brand-job-interview-to-steal-google-accounts/"
+    },
+    {
+      "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
+      "source": "BleepingComputer",
+      "sourceType": "RSS",
+      "title": "Fake IT support calls on Microsoft Teams push EtherRAT malware",
+      "summary": "Threat actors are abusing Microsoft Teams voice calls by impersonating corporate IT support staff to trick employees into installing the EtherRAT malware, giving attackers initial access to corporate networks. [...]",
+      "url": "https://www.bleepingcomputer.com/news/security/fake-it-support-calls-on-microsoft-teams-push-etherrat-malware/",
+      "publishedAt": "2026-07-06T20:23:45.000Z",
+      "severity": "medium",
+      "tags": [
+        "Microsoft",
+        "Malware"
+      ],
+      "category": "Cybersecurity News",
+      "recommendedAction": "Review Microsoft patch applicability and confirm endpoint and server update status.",
+      "businessImpact": "Business impact appears informational unless affected technology is present in the environment.",
+      "affectedTechnology": [
+        "Microsoft"
+      ],
+      "threatType": [
+        "Malware"
+      ],
+      "priorityScore": 25,
+      "reviewStatus": "unreviewed",
+      "remediation": "1. Validate whether the affected product, vendor, service, or technology exists in the environment.\n2. Review the original source article and any linked vendor advisory before taking action.\n14. Review Microsoft security guidance, patch status, Defender/EDR telemetry, and exposure of affected servers or services.\n15. Track for awareness and validate applicability during normal security review.",
+      "remediationShort": "Review for applicability during normal security operations and document whether action is required.",
+      "remediationSource": "Generated from alert text",
+      "remediationSourceUrl": "https://www.bleepingcomputer.com/news/security/fake-it-support-calls-on-microsoft-teams-push-etherrat-malware/",
+      "remediationConfidence": "medium",
+      "requiresVendorValidation": true,
+      "dedupeKey": "https://www.bleepingcomputer.com/news/security/fake-it-support-calls-on-microsoft-teams-push-etherrat-malware/"
     },
     {
       "id": "aHR0cHM6Ly93d3cuYmxlZXBp",
